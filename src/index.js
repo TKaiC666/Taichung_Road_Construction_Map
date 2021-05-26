@@ -55,6 +55,7 @@ const Card = (props)=>{
                 </div>
                 <div className={`${showLess && 'noneDisplay'} horiLine`}/>
                 <table className={`${showLess && 'noneDisplay'} card-body-detailInfo`}>
+                    <tbody>
                     <tr>
                         <td className='heading'>申請書編號</td><td>{data['申請書編號']}</td>
                     </tr>
@@ -76,20 +77,35 @@ const Card = (props)=>{
                     <tr className='clear-gap'>
                         <td>{data['承辦人電話']}</td>
                     </tr>
+                    </tbody>
                 </table>
-                <i className={`fas ${showLess ? 'fa-chevron-circle-down' : 'fa-chevron-circle-up'} scrollDetailInfo`} onClick={()=>{handleClick()}}></i>
+                <div className='scrollDetailInfo' onClick={()=>{handleClick()}}>
+                    <i className={`fas ${showLess ? 'fa-angle-double-down' : 'fa-angle-double-up'}`}/><span>{showLess ? '更多資訊' : '收合資訊'}</span>
+                </div>
             </div>
         </div>
     );
 }
 
 const CardList = (props)=>{
+
+    const [pageNum, setPageNum] = useState(0);
+    const [currentPageNum, setCurrentPageNum] = useState(0);
+    const [cardsNum, setCardsNum] = useState([0,1,2,3,4,5,6,7,8,9]);
+
+    const handleClick = (x)=>{
+        setPageNum(x);
+        setCurrentPageNum(x);
+        setCardsNum(Array.from({length: props.value[x].length},(_,index) => index));
+    }
+
     //CardList有三種狀態:
     //Loading, Success, Fail
     if(props.value.length === 0){
         //Loading
         return(
             <div className='cardList'>
+                <p id='listTop'  className='marginBottom-3'/>
                 <Card value={'loading'}/>
                 <Card value={'loading'}/>
                 <Card value={'loading'}/>
@@ -98,20 +114,28 @@ const CardList = (props)=>{
     }
     else{
         //Success
-        const cards =  Array.from({length: props.value.length},(_,index) => index);
+        let pageBtns = Array.from({length: props.value.length},(_,index)=>index);
         return(
             <div className='cardList'>
+                <p id='listTop' className='marginBottom-3'/>
+                <div className='pageBtns marginBottom-2'>
                 {
-                    cards.map((index)=>(
-                        <Card key={index} value={props.value[index]}/>
+                    pageBtns.map((i)=>(
+                        <a key={'page'+(i+1)} href={'#listTop'} onClick={()=>{handleClick(i)}} className={i===currentPageNum && 'color_orange'}>{i+1}</a>
                     ))
                 }
-                <div className='pageBtns'>
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
-                    <div>...</div>
-                    <div>{Math.ceil(props.value.length / 10)}</div>
+                </div>
+                {
+                    cardsNum.map((i)=>(
+                        <Card key={'card'+(pageNum*10+i+1)} value={props.value[pageNum][i]}/>
+                    ))
+                }
+                <div className='pageBtns marginTop-3'>
+                {
+                    pageBtns.map((i)=>(
+                        <a key={'page'+(i+1)} href={'#listTop'} onClick={()=>{handleClick(i)}} className={i===currentPageNum && 'color_orange'}>{i+1}</a>
+                    ))
+                }
                 </div>
             </div>
         );
@@ -119,20 +143,20 @@ const CardList = (props)=>{
 }
 
 const App = ()=>{
-    const [data,setLocationDatas] = useState([]);
+    const [constructionData,setConstructionData] = useState([]);
 
     const pickWorkingProject = (data)=>{
         let _data = data;
         let newData = [];
-        console.log('pick working project ' + _data.length);
+        console.log('pick working projects from ' + data.length);
         for(let i = 0; i < _data.length; i++){
             if(_data[i]['是否開工'] === '是'){
                 newData.push(_data[i]);
             }
         }
-        setLocationDatas(newData);
-        
-        sliceData(newData);
+        console.log(newData.length+' working projects');
+        // setConstructionData(newData);
+        setConstructionData(sliceData(newData));
     }
 
     const sliceData = (data)=>{
@@ -142,7 +166,7 @@ const App = ()=>{
         for(let i = 0; i < _data.length; i+=10){
             newData.push(_data.slice(i,i+10));
         }
-        console.log(newData);
+        return newData;
     }
 
     const fetchData = ()=>{
@@ -152,7 +176,6 @@ const App = ()=>{
         .then((response) => response.json())
         .then((data)=>{
             console.log('Fetch data');
-            setLocationDatas(data);
             pickWorkingProject(data);
         });
     }
@@ -162,11 +185,13 @@ const App = ()=>{
     },[]);
 
     return(
-        <CardList value={data}/>
+        <CardList value={constructionData}>
+            {console.log('render cardList')}
+        </CardList>
     );
 }
 
 ReactDOM.render(
-    <App />,
+    <App/>,
     document.getElementById('root')
 );

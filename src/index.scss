@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500&display=swap');
+@import './scss/normalize.scss';
+@font-face {
+  font-family: 'js-openhuninn';
+  src: url(./font/jf-openhuninn-1.1.ttf);
+}
 
 html,body{
     margin: 0;
@@ -24,10 +29,21 @@ html,body{
     }
 }
 
+.infoMap{
+    border: 0;
+    margin: 0;
+    padding: 0;
+    width: calc(100% - 410px - 6em);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
 .horiLine{
     width: 100%;
     height: 0;
-    margin: 1em auto;
+    margin: 1.5em 0 1em;
     border-bottom: rgba(0, 0, 0, 0.31) 1px solid;
 }
 
@@ -35,7 +51,36 @@ html,body{
     display: none;
 }
 
+.marker{
+    width: 4em;
+    height: 4em;
+    border-radius: 2em;
+    background-color: rgba(0, 0, 0, 0.596);
+    i{
+        font-size: 2em;
+        position: relative;
+        left: 0.5em;
+        top: 0.4em;
+    }
+}
+
+
+.showInfoOnMap{
+    width: 6em;
+    margin-top: 2em;
+    position: absolute;
+    left: 13%;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.5);
+    transition: all 0.1s;
+    &:hover{
+        color:rgba(0, 0, 0, 0.3);
+        transition: all 0.2s;
+    }
+}
+
 .scrollDetailInfo{
+    width: 5.5em;
     margin-top: 2em;
     position: relative;
     left: 80%;
@@ -44,8 +89,6 @@ html,body{
     transition: all 0.1s;
     i{
         margin-right: 0.5em;
-    }
-    span{
     }
     &:hover{
         color:rgba(0, 0, 0, 0.3);
@@ -70,35 +113,40 @@ html,body{
     height: calc(100vh - 3em);
     padding: 0 3em 3em;
     position: fixed;
+    top: 0;
     right: 0;
     background-color: #f6f6f6;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.25);
     overflow-y: scroll;
 
-    .pageBtns{
+    .pagination{
         text-align: center;
-        a{
+        .pageBtn{
+            font-size: 16px;
             display: inline-block;
             text-decoration: none;
             text-align: center;
-            line-height: 2em;
-            width: 2em;
-            height: 2em;
-            padding: 0.5em;
-            margin-right: 0.5em;
+            line-height: 1.75em;
+            width: 1.75em;
+            padding: 0.38em;
+            margin-right: 0.3em;
             border-radius: 1.5em;
-            color: #000000;
+            &:last-child{
+                margin-right: 0;
+            }
+
             &:hover{
                 cursor: pointer;
+                color: #FFA665;
                 background-color: #FFDEC7;
                 transition: all 0.2s;
             }
-            &:visited{
+            &:visited, &:active{
                 color: #000000;
             }
-            &:active{
-                color: #000000;
-            }
+        }
+        div::after{
+            content: '...';
         }
         
     }
@@ -142,9 +190,9 @@ html,body{
     &-body{
         padding: 1.5em;
         &-basicInfo{
-            div{
+            .date{
                 span{
-                    font-size: 2em;
+                    font-size: 1.5em;
                     font-weight: 700;
                     letter-spacing: 2.5px;
                 }
@@ -203,7 +251,7 @@ html,body{
     }
 }
 
-.color{
+.bgColor{
     &_orange{
         background-color: #FFA665;
         &-light{

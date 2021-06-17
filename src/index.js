@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './component/App';
-import TestApp from './component/TestApp';
+import TaichungRCIApp from './component/TaichungRCIApp';
 import './index.css';
 import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 
 ReactDOM.render(
-    <TestApp/>,
+    <React.StrictMode>
+        <TaichungRCIApp/>
+    </React.StrictMode>
+    ,
     document.getElementById('root')
 );

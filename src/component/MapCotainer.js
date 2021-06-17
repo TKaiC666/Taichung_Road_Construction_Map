@@ -136,7 +136,7 @@ const MapContainer = (props)=>{
     let markers;
     let deployMarkers;
 
-    if(constructionsData.length !== 0){
+    if(constructionsData !== null){
         markersNum = (constructionsData.length-1)*10 + constructionsData[(constructionsData.length-1)].length;
         markers = Array.from({length : markersNum},(_,index)=>index);
         deployMarkers = markers.map((i)=>(
@@ -160,7 +160,7 @@ const MapContainer = (props)=>{
                 }}
             >
                 {
-                    constructionsData.length === 0 ? '' : deployMarkers 
+                    constructionsData === null ? '' : deployMarkers 
                 }
                 <Polygon path={path} options={options}/>
             </GoogleMap>

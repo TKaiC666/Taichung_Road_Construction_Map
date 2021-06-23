@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 @import './scss/normalize.scss';
+@import './scss/colors/colors.scss';
 @font-face {
   font-family: 'js-openhuninn';
   src: url(./font/jf-openhuninn-1.1.ttf);
@@ -10,8 +11,10 @@ html,body{
     padding: 0;
     text-decoration: none;
     background-color: #e4e4e4;
-    font-size: 14px;
+    font-size: 16px;
     font-family: 'Noto Sans TC', sans-serif;
+    // font-family: 'js-openhuninn', sans-serif;
+    font-weight: 400;
 }
 
 ::-webkit-scrollbar{
@@ -33,32 +36,64 @@ html,body{
     border: 0;
     margin: 0;
     padding: 0;
-    width: calc(100% - 410px - 6em);
+    width: calc(100% - 460px - 6em);
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
 }
 
-.selectors{
-    // display: flex;
-    margin-bottom: 2em;
-    div{
+.toolbarContainer{
+    width: 450px;
+    padding: 0 3em;
+}
+
+.pagination{
+    margin-top: 2em;
+    text-align: center;
+    .pageBtn{
+        font-size: 16px;
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
+        line-height: 1.75em;
+        width: 1.75em;
+        padding: 0.38em;
+        margin-right: 0.3em;
+        border-radius: 1.5em;
         &:last-child{
-            margin-top: 5px;
+            margin-right: 0;
+        }
+
+        &:hover{
+            cursor: pointer;
+            color: $black;
+            background-color: $mintGreen-light;
+            transition: all 0.2s;
+        }
+        &:visited, &:active{
+            color: $black;
         }
     }
+    div::after{
+        content: '...';
+    }
+    
+}
+
+.selectors{
     select{
-        flex: 1;
         padding: 5px;
         border-radius: 10px;
         margin-right: 10px;
+        option:hover{
+            background-color: $mintGreen-light;
+        }
         &:last-child{
             margin-right: 0px;
         }
     }
     input{
-        flex: 1;
         height: 1.5em;
         padding: 5px 10px;
         border-radius: 10px;
@@ -66,46 +101,29 @@ html,body{
     }
 }
 
+.cardListContainer{
+    position: relative;
+    flex-grow: 1;
+}
+
+.cardsList{
+    position: absolute;
+    width: 460px;
+    height: calc(100% - 4px - 5em);
+    margin-top: 2em;
+    padding: 4px calc(3em - 10px) 3em 3em;
+    overflow-y: scroll;
+}
+
 .horiLine{
     width: 100%;
     height: 0;
-    margin: 1.5em 0 1em;
-    border-bottom: rgba(0, 0, 0, 0.31) 1px solid;
+    margin: 2em 0 2em;
+    border-bottom: $minor 1px solid;
 }
 
 .noneDisplay{
     display: none;
-}
-
-.showInfoOnMap{
-    width: 6em;
-    margin-top: 2em;
-    position: absolute;
-    left: 13%;
-    cursor: pointer;
-    color: rgba(0, 0, 0, 0.5);
-    transition: all 0.1s;
-    &:hover{
-        color:rgba(0, 0, 0, 0.3);
-        transition: all 0.2s;
-    }
-}
-
-.scrollDetailInfo{
-    width: 5.5em;
-    margin-top: 2em;
-    position: relative;
-    left: 80%;
-    cursor: pointer;
-    color: rgba(0, 0, 0, 0.5);
-    transition: all 0.1s;
-    i{
-        margin-right: 0.5em;
-    }
-    &:hover{
-        color:rgba(0, 0, 0, 0.3);
-        transition: all 0.2s;
-    }
 }
 
 .marginTop-3{
@@ -119,90 +137,95 @@ html,body{
     margin: 0 0 3em;
 }
 
-.cardList {
-    //這邊很奇怪。用google chrome和edge的開發者工具看，width會比CSS設置的少10px。
-    //但是firefox是正常410px。
-    width: 410px;
-    height: calc(100vh - 3em);
-    padding: 0 3em 3em;
+.infoBlockContainer{
     position: fixed;
     top: 0;
     right: 0;
+}
+
+.infoBlock {
+    //這邊很奇怪。用google chrome和edge的開發者工具看，width會比CSS設置的少10px。
+    //但是firefox是正常410px。
+    width: calc(450px + 6em);
+    height: calc(100vh - 3em);
+    display: flex;
+    flex-flow: column;
+    padding-top: 3em;
     background-color: #f6f6f6;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.25);
-    overflow-y: scroll;
-
-    .pagination{
-        text-align: center;
-        .pageBtn{
-            font-size: 16px;
-            display: inline-block;
-            text-decoration: none;
-            text-align: center;
-            line-height: 1.75em;
-            width: 1.75em;
-            padding: 0.38em;
-            margin-right: 0.3em;
-            border-radius: 1.5em;
-            &:last-child{
-                margin-right: 0;
-            }
-
-            &:hover{
-                cursor: pointer;
-                color: #FFA665;
-                background-color: #FFDEC7;
-                transition: all 0.2s;
-            }
-            &:visited, &:active{
-                color: #000000;
-            }
-        }
-        div::after{
-            content: '...';
-        }
-        
-    }
 }
 
 .card {
     margin: 0 auto 2em;
-    width: 400px;
+    padding: 2em;
+    width: calc(450px - 4em);
     background-color: #fafafa;
-    box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 2px 5px 1px $boxShadow;
     transition: all 0.3s;
     border-radius: 10px;
     overflow: hidden;
 
+    &:last-child{
+        margin-bottom: 0;
+    }
+
     &:hover{
         background-color: #ffffff;
-        box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.2);
+        box-shadow: 0px 5px 15px 0px $boxShadow;
         transition: all 0.1s ease-in;
     }
 
-    &-title{
-        display: flex;
-        font-size: 1.15em;
-        box-shadow: 0px 0.5px 5px -1px rgba(0, 0, 0, 0.3);
-        *{
-            padding:0.7em 1em;
+    .item{
+        color: $minor;
+        font-size: 0.5em;
+        font-weight: 300;
+        letter-spacing: 1px;
+        margin-bottom: 0.5em;
+    }
+
+    .highlighter{
+        position: relative;
+        top: 1.7em;
+        left: 4.5em;
+        width: 7em;
+        height: 0.85em;
+        margin-top: -0.85em;
+        border-radius: 0.4em;
+    }
+
+    &-meta{
+        &-title{
+            font-size: 1.4em;
+            line-height: 1.5em;
+            .dist{
+                display: inline-block;
+                vertical-align: sub;
+                vertical-align: middle;
+                width: 62px; // 400px : 55px
+                margin-right:1.5em;
+                padding: 0 5px;
+                font-size: 0.8em;
+                letter-spacing: 2px;
+                //---把最後一個字的letter-space空間去除
+                text-indent: -2px;
+                direction: rtl;
+                //------------------------------------
+                text-align: center;
+                border: $minor 1.5px solid;
+                color: $minor;
+            }
+            .pipeType{
+                display: inline-block;
+                font-size: 1.2em;
+                width: calc(400px - 56px - 93px);
+                font-weight: 500;
+                vertical-align: middle;
+                letter-spacing: 2px;
+            }
         }
-    }
-
-    &-type{
-        // width: 2.5em;
-        flex: 0.25;
-        text-align: center;
-    }
-
-    &-location{
-        // width: calc(100% - 2.5em);
-        flex: 0.75;
-    }
-
-    &-body{
-        padding: 1.5em;
+        
         &-basicInfo{
+            margin: 1.5em 0;
             .date{
                 span{
                     font-size: 1.5em;
@@ -217,35 +240,92 @@ html,body{
                     padding: 0 0.1em;
                 }
                 i{
-                    color: rgba(0, 0, 0, 0.8);
+                    position: relative;
+                    bottom : 2px;
+                    color: $minor;
                     padding: 0 0.75em;
                 }
             }
-            p{
-                margin: 0.25em 0;
-                padding-top:0.5em;
-                letter-spacing: 1px;
+            .info{
+                font-size: 1.25em;
+                margin-top:1em;
+                letter-spacing: 2px;
             }
         }
-        &-detailInfo{
-            padding: 0;
-            border-spacing: 0;
-            letter-spacing: 2px;
-            tr{
-                vertical-align: top;
-                td{
-                    padding-top: 0.75em;
+
+        .buttons{
+            float: right;
+            *{
+                font-size: 1.15em;
+                display: inline-block;
+                width: 40px;
+                line-height: 40px;
+                border-radius: 20px;
+                text-align: center;
+                margin-right: 15px;
+                box-shadow: 0px 0px 5px -1px $boxShadow;
+                &:last-child{
+                    margin-right: 0px;
                 }
-                .heading{
-                    width: 6em;
-                    font-weight: 700;
-                    padding-right: 2em;
+                &:hover{
+                    cursor: pointer;
                 }
             }
-            .clear-gap{
-                td{
-                    padding-top: 0.25em;
+            &-locate{
+                color: $candyPink;
+                background-color: $white;
+                transition: all 0.1s;
+                &:hover{
+                    color: $white;
+                    background-color: $candyPink;
                 }
+            }
+            &-moreInfo{
+                color: $mintGreen;
+                background-color: $white;
+                transition: all 0.1s;
+                &:hover{
+                    color: $white;
+                    background-color: $mintGreen;
+                }
+            }
+            &-moreInfoClicked{
+                color: $white;
+                background-color: $mintGreen;
+            }
+        }
+
+        &::after{
+            clear: both;
+            display: block;
+            content: '';
+        }
+    }
+
+    &-body{
+        font-size: 1.25em;
+        letter-spacing: 2px;
+
+        .constructTitle{
+            line-height: normal;
+            font-weight: 700;
+        }
+
+        &-detailInfo{
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            row-gap: 1em;
+            letter-spacing: 2px;
+
+            .oneRow{
+                grid-column-start: 1;
+                grid-column-end: 3;
+            }
+            
+            .phone{
+                font-size: 0.5em;
+                margin-top: 3px;
             }
         }
     }
@@ -268,7 +348,14 @@ html,body{
     &_orange{
         background-color: #FFA665;
         &-light{
-            background-color: #FFDEC7;
+            background-color: #ffdec7;
+        }
+    }
+
+    &_mintGreen{
+        background-color: $mintGreen;
+        &-light{
+            background-color: $mintGreen-light;
         }
     }
 }

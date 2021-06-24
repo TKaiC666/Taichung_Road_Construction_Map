@@ -35,7 +35,7 @@ const Card = (props)=>{
     }
 
     return(
-        <div className='card' id={props.anchor === 0 ? 'firstCard' : null}>
+        <div className='card'>
             <div className='card-meta'>
                 <div className='card-meta-title'>
                     <div className='highlighter bgColor_mintGreen-light' style={{width:data.pipeType.length+'em'}}></div>

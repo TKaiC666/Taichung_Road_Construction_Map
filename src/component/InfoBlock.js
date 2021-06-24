@@ -17,7 +17,8 @@ const InfoBlock = (props)=>{
 
             if(props.value===null) return;
             else if(props.value.length>1) length =  props.value[pageIndex].length;
-            else length =  props.value[0].length;
+            else if(props.value.length === 1) length =  props.value[0].length;
+            else length = 0;
 
             arr = Array.from({length: length},(_,index) => index);
             return(arr);
@@ -36,6 +37,7 @@ const InfoBlock = (props)=>{
             <div className='infoBlock'>
                 <div className='cardListContainer'>
                 <div className='cardsList'>
+                    <div id='topAnchor' style={{marginBottom:'2em'}}/>
                     <Card value={'loading'}/>
                     <Card value={'loading'}/>
                     <Card value={'loading'}/>
@@ -44,10 +46,31 @@ const InfoBlock = (props)=>{
             </div>
             </div>
         );
+    }else if(props.value.length === 0){
+        return(
+            <div className='infoBlockContainer'>
+            <div className='infoBlock'>
+                <div className='toolbarContainer'>
+                    <Selectors
+                        options={props.option}
+                        condition={props.condition}
+                        setCondition={props.setCondition}
+                    />
+                </div>
+                <div className='cardListContainer'>
+                <div className='cardsList'>
+                    <div className='noContent'>
+                        查無資料
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        );
     }
     else{
         let pageBtns = Array.from({length: props.value.length},(_,index)=>index);
-
+        console.log('InfoBlock : render start');
         return(
             <div className='infoBlockContainer'>
             <div className='infoBlock'>
@@ -67,6 +90,7 @@ const InfoBlock = (props)=>{
                 </div>
                 <div className='cardListContainer'>
                 <div className='cardsList'>
+                    <div id='topAnchor' style={{marginBottom:'2em'}}/>
                 {
                     cardsNum.map((i)=>(
                         <Card key={'card'+(pageIndex*10+i+1)}

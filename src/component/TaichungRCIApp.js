@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Map from './Map'
 import InfoBlock from './InfoBlock';
 
@@ -8,7 +8,6 @@ const TaichungRCIApp = ()=>{
     const [constructionPolygon, setConstructionPolygon] = useState([]);
     const [constructionLocation, setConstructionLocation] = useState();
     const [condition, setCondition] = useState({distriction:0, date:{start:null,end:null}, stack:[]});
-    let conditionRef = useRef(condition);
     // const findUserLocation = ()=>{
     //     if('geolocation' in navigator){
     //         navigator.geolocation.getCurrentPosition((position)=>{
@@ -180,16 +179,19 @@ const TaichungRCIApp = ()=>{
             let dataLength = constructionsData[1];
             let data = constructionsData[0];
             let newData = [];
-            if(typeof condition.distriction === typeof condition.pipeType){
+            if(condition.stack.length >= 2){
                 console.log('search both');
                 while(i < dataLength){
                     if(data[Math.floor(i/10)][i%10].distriction === condition.distriction
-                       && data[Math.floor(i/10)][i%10].pipeType === condition.pipeType){
+                       && ((convertDate2Num(condition.date.start) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
+                       && convertDate2Num(condition.date.start) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end))
+                       || (convertDate2Num(condition.date.end) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
+                       && convertDate2Num(condition.date.end) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end)))){
                         newData.push(data[Math.floor(i/10)][i%10]);
                     }
                     i++;
                 }
-            }else if(condition.distriction !== 0){
+            }else if(condition.distriction !== 0 ){
                 console.log('search distriction');
                 while(i < dataLength){
                     if(data[Math.floor(i/10)][i%10].distriction === condition.distriction){
@@ -198,12 +200,12 @@ const TaichungRCIApp = ()=>{
                     i++;
                 }
             }else if(condition.date.start !== null && condition.date.end !== null){
-                console.log('search time');
+                console.log('search date');
                 while(i < dataLength){
-                    if((convertDate2Num(data[Math.floor(i/10)][i%10].date.start) >= convertDate2Num(condition.date.start)
-                       && convertDate2Num(data[Math.floor(i/10)][i%10].date.start) <= convertDate2Num(condition.date.end))
-                       || (convertDate2Num(data[Math.floor(i/10)][i%10].date.end) >= convertDate2Num(condition.date.start)
-                       && convertDate2Num(data[Math.floor(i/10)][i%10].date.end) <= convertDate2Num(condition.date.end))){
+                    if((convertDate2Num(condition.date.start) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
+                       && convertDate2Num(condition.date.start) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end))
+                       || (convertDate2Num(condition.date.end) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
+                       && convertDate2Num(condition.date.end) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end))){
                         newData.push(data[Math.floor(i/10)][i%10]);
                     }
                     i++;
@@ -220,68 +222,68 @@ const TaichungRCIApp = ()=>{
         return [sliceData(newData),newData.length];
     },[condition, constructionsData]);
 
-    const pickOptions = ()=>{
-        console.log("pickOptions() : start");
-            let data = constructionsData[0];
-            let length = constructionsData[1];
-            let optionsStack = condition.stack;
-            let options = {distriction:[], pipeType:[], date:{start:{},end:{}}};
-            if(optionsStack.length === 0){
-                let i = 0;
-                options.distriction.push(data[0][0].distriction);
-                options.pipeType.push(data[0][0].pipeType);
-                options.date.start = {...data[0][0].start};
-                options.date.end = {...data[0][0].end};
-                do{
-                    let _dist = data[Math.floor(i/10)][i%10].distriction;
-                    let _pipe = data[Math.floor(i/10)][i%10].pipeType;
-                    let _startDate = data[Math.floor(i/10)][i%10].date.start;
-                    let _endDate = data[Math.floor(i/10)][i%10].date.end;
-                    if(options.distriction.indexOf(_dist) === -1) options.distriction.push(_dist);
-                    if(options.pipeType.indexOf(_pipe) === -1) options.pipeType.push(_pipe);
-                    i++;
-                }while(i<length)
-            }else if(optionsStack.length >= 1){
-                let i = 0;
-                let keep = optionsStack[0];
-                options[keep].push(data[0][0][keep]);
-                while(i<length){
-                    let singleData = data[Math.floor(i/10)][i%10];
-                    if(options[keep].indexOf(singleData[keep]) === -1){
-                        options[keep].push(singleData[keep]);
-                    }
-                    i++;
-                }
+    // const pickOptions = ()=>{
+    //     console.log("pickOptions() : start");
+    //         let data = constructionsData[0];
+    //         let length = constructionsData[1];
+    //         let optionsStack = condition.stack;
+    //         let options = {distriction:[], pipeType:[], date:{start:{},end:{}}};
+    //         if(optionsStack.length === 0){
+    //             let i = 0;
+    //             options.distriction.push(data[0][0].distriction);
+    //             options.pipeType.push(data[0][0].pipeType);
+    //             options.date.start = {...data[0][0].start};
+    //             options.date.end = {...data[0][0].end};
+    //             do{
+    //                 let _dist = data[Math.floor(i/10)][i%10].distriction;
+    //                 let _pipe = data[Math.floor(i/10)][i%10].pipeType;
+    //                 if(options.distriction.indexOf(_dist) === -1) options.distriction.push(_dist);
+    //                 if(options.pipeType.indexOf(_pipe) === -1) options.pipeType.push(_pipe);
+    //                 i++;
+    //             }while(i<length)
+    //         }else if(optionsStack.length >= 1){
+    //             let i = 0;
+    //             let keep = optionsStack[0];
+    //             options[keep].push(data[0][0][keep]);
+    //             while(i<length){
+    //                 let singleData = data[Math.floor(i/10)][i%10];
+    //                 if(options[keep].indexOf(singleData[keep]) === -1){
+    //                     options[keep].push(singleData[keep]);
+    //                 }
+    //                 i++;
+    //             }
                 
-                //shallow copy with spread syntax(...)
-                let changed = {...condition};
-                delete changed.stack;
-                delete changed[keep];
-                changed = Object.keys(changed)[0];
+    //             //shallow copy with spread syntax(...)
+    //             let changed = {...condition};
+    //             delete changed.stack;
+    //             delete changed[keep];
+    //             changed = Object.keys(changed)[0];
 
-                data = conditionedChange[0];
-                length = conditionedChange[1];
-                i=0;
-                options[changed].push(data[0][0][changed]);
-                while(i < length){
-                    let singleData = data[Math.floor(i/10)][i%10];
-                    if(options[changed].indexOf(singleData[changed]) === -1){
-                        options[changed].push(singleData[changed]);
-                    }
-                    i++;
-                }
-            }
-            console.log("pickOptions() : \n"+options.distriction+'\n'+options.pipeType);
-            return options;
-    }
+    //             data = conditionedChange[0];
+    //             length = conditionedChange[1];
+    //             i=0;
+    //             options[changed].push(data[0][0][changed]);
+    //             while(i < length){
+    //                 let singleData = data[Math.floor(i/10)][i%10];
+    //                 if(options[changed].indexOf(singleData[changed]) === -1){
+    //                     options[changed].push(singleData[changed]);
+    //                 }
+    //                 i++;
+    //             }
+    //         }
+    //         console.log("pickOptions() : \n"+options.distriction+'\n'+options.pipeType);
+    //         return options;
+    // }
 
     const pickSelectOptions = ()=>{
         console.log('pick options (dist & date)');
+        console.log(condition);
         let data = constructionsData[0];
         let length = constructionsData[1];
         let optionsStack = condition.stack;
         let options = {distriction:[], date:{start:{},end:{}}};
         if(optionsStack.length === 0){
+            console.log('沒有條件，顯示全部選項');
             let i = 0;
             options.distriction.push(data[0][0].distriction);
             options.date.start = {...data[0][0].date.start};
@@ -291,15 +293,32 @@ const TaichungRCIApp = ()=>{
                 let _startDate = {...data[Math.floor(i/10)][i%10].date.start};
                 let _endDate = {...data[Math.floor(i/10)][i%10].date.end};
                 if(options.distriction.indexOf(_dist) === -1) options.distriction.push(_dist);
-                if(convertDate2Num(_startDate) < convertDate2Num(options.date.start)) options.date.start = {..._startDate};
-                if(convertDate2Num(_endDate) > convertDate2Num(options.date.end)) options.date.end = {..._endDate};
+                if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
+                if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
                 i++;
             }while(i < length)
-        }else if(optionsStack.length === 1){
-            let condition = optionsStack[0];
+        }else if(optionsStack.length >= 1){
+            //條件篩選沒有符合的資料
+            if(conditionedChange[0].length === 0){
+                console.log('沒有符合的資料');
+                let i = 0;
+                options.date.start = {...data[0][0].date.start};
+                options.date.end = {...data[0][0].date.end};
+                do{
+                    let _startDate = {...data[Math.floor(i/10)][i%10].date.start};
+                    let _endDate = {...data[Math.floor(i/10)][i%10].date.end};
+                    if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
+                    if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
+                    i++;
+                }while(i < length)
+                options.distriction.push(condition.distriction);
+                return options;
+            }
+            let singleCondition = optionsStack[0];
             let i = 0;
             //distriction和date的資料結構不同，不能用bracket notation來指定options的值
-            if(condition === 'distriction'){
+            if(singleCondition === 'distriction'){
+                console.log('篩選地區選項');
                 let distDataList = conditionedChange[0];
                 let distDataLength = conditionedChange[1];
                 options.date.start = {...distDataList[0][0].date.start};
@@ -307,8 +326,8 @@ const TaichungRCIApp = ()=>{
                 while(i < distDataLength){
                     let _startDate = {...distDataList[Math.floor(i/10)][i%10].date.start};
                     let _endDate = {...distDataList[Math.floor(i/10)][i%10].date.end};
-                    if(convertDate2Num(_startDate) < convertDate2Num(options.date.start)) options.date.start = {..._startDate};
-                    if(convertDate2Num(_endDate) > convertDate2Num(options.date.end)) options.date.end = {..._endDate};
+                    if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
+                    if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
                     i++;
                 }
                 i=0;
@@ -319,7 +338,8 @@ const TaichungRCIApp = ()=>{
                     i++;
                 }
             }
-            else if(condition === 'date'){
+            else if(singleCondition === 'date'){
+                console.log('篩選時間選項 : ');
                 let dateDataList = conditionedChange[0];
                 let dateDataLength = conditionedChange[1];
                 options.distriction.push(dateDataList[0][0].distriction);
@@ -334,14 +354,13 @@ const TaichungRCIApp = ()=>{
                 while(i < length){
                     let _startDate = {...data[Math.floor(i/10)][i%10].date.start};
                     let _endDate = {...data[Math.floor(i/10)][i%10].date.end};
-                    if(convertDate2Num(_startDate) < convertDate2Num(options.date.start)) options.date.start = {..._startDate};
-                    if(convertDate2Num(_endDate) > convertDate2Num(options.date.end)) options.date.end = {..._endDate};
+                    if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
+                    if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
                     i++;
                 }
             }
-        }else if(optionsStack.length > 1){
-
         }
+
         console.log(options);
         return options;
     }
@@ -358,15 +377,13 @@ const TaichungRCIApp = ()=>{
         );
     }else{
         let data = null;
-        if((condition.distriction === 0 && condition.date.start === null && condition.date.end === null)) data = constructionsData;
+        if(condition.distriction === 0 && condition.date.start === null && condition.date.end === null) data = constructionsData;
         else{
             console.log('conditioned changed');
             data = conditionedChange;
-            conditionRef.current = {...condition};
-            console.log(data);
         }
         return(
-            <div>
+            <div className='container'>
                 {console.log('TaichungRCIApp : default layout')}
                 <Map constructionsData={data[0]} center={constructionLocation} path={constructionPolygon}/>
                 <InfoBlock value = {data[0]}

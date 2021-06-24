@@ -415,15 +415,16 @@ html, body {
 }
 
 .selectors select {
-  padding: 5px;
+  line-height: normal;
+  padding: 5px 10px;
   border-radius: 10px;
   margin-right: 10px;
 }
 .selectors select option:hover {
   background-color: #bdecec;
 }
-.selectors select:last-child {
-  margin-right: 0px;
+.selectors select::-webkit-scrollbar-track {
+  background-color: #ffffff;
 }
 .selectors input {
   height: 1.5em;
@@ -442,15 +443,16 @@ html, body {
   width: 460px;
   height: calc(100% - 4px - 5em);
   margin-top: 2em;
-  padding: 4px calc(3em - 10px) 3em 3em;
+  padding: 0 calc(3em - 10px) 3em 3em;
   overflow-y: scroll;
+  border-top: 1px solid #c8c8c8;
 }
 
 .horiLine {
   width: 100%;
   height: 0;
   margin: 2em 0 2em;
-  border-bottom: #505050 1px solid;
+  border-bottom: 1px solid #c8c8c8;
 }
 
 .noneDisplay {
@@ -489,7 +491,7 @@ html, body {
   margin: 0 auto 2em;
   padding: 2em;
   width: calc(450px - 4em);
-  background-color: #fafafa;
+  background-color: #ffffff;
   box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.2);
   transition: all 0.3s;
   border-radius: 10px;
@@ -499,7 +501,7 @@ html, body {
   margin-bottom: 0;
 }
 .card:hover {
-  background-color: #ffffff;
+  background-color: #fbfbfb;
   box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.2);
   transition: all 0.1s ease-in;
 }
@@ -640,6 +642,14 @@ html, body {
 .card-body-detailInfo .phone {
   font-size: 0.5em;
   margin-top: 3px;
+}
+
+.noContent {
+  text-align: center;
+  letter-spacing: 5px;
+  padding: 2em;
+  color: #505050;
+  font-size: 2em;
 }
 
 .loading {

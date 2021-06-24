@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {GoogleMap, LoadScript, InfoWindow, MarkerClusterer, Marker, Polygon} from '@react-google-maps/api';
 import Card from './Card';
 
@@ -12,8 +12,9 @@ const Map = (props)=>{
     let zoom = 11;
     let path = props.path;
     let markers;
+    let isClusterWork = (constructionsData !== null) && (constructionsData.length !== 0) ? true : false;
 
-    if(constructionsData !== null){
+    if(constructionsData !== null && constructionsData.length !== 0){
         let markersNum = (constructionsData.length-1)*10 + constructionsData[(constructionsData.length-1)].length;
         markers = Array.from({length : markersNum},(_,index)=>index);
     }
@@ -27,6 +28,7 @@ const Map = (props)=>{
     }
     
     return(
+        <div className='mapContainer'>
         <LoadScript googleMapsApiKey={APIKey}>
             <GoogleMap
                 mapContainerStyle={{
@@ -49,7 +51,7 @@ const Map = (props)=>{
                 // }}
             >
                 {console.log('map render')}
-                { constructionsData && 
+                { isClusterWork && 
                     <MarkerClusterer 
                         options={clustersOptions} 
                         gridSize={gridSize}
@@ -82,6 +84,7 @@ const Map = (props)=>{
                 <Polygon path={path} options={polygonOptions}/>
             </GoogleMap>
         </LoadScript>
+        </div>
     );
 }
 

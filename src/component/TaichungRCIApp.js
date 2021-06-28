@@ -5,9 +5,14 @@ import InfoBlock from './InfoBlock';
 const TaichungRCIApp = ()=>{
     console.log('TaichungRCIApp : start');
     const [constructionsData, setConstructionsData] = useState([null,null]);
-    const [constructionPolygon, setConstructionPolygon] = useState([]);
-    const [constructionLocation, setConstructionLocation] = useState();
     const [condition, setCondition] = useState({distriction:0, date:{start:null,end:null}, stack:[]});
+    const [mapParameters, setMapParameters] = useState({
+        center:{lat : 24.1512535, lng : 120.6617366},
+        polygon: null,
+        zoom: 11,
+        selectMarker: null,
+        closeInfoWindow: null
+    });
     // const findUserLocation = ()=>{
     //     if('geolocation' in navigator){
     //         navigator.geolocation.getCurrentPosition((position)=>{
@@ -101,6 +106,7 @@ const TaichungRCIApp = ()=>{
                 address : data['地點'],
                 pipeType : data['管線工程類別'],
                 constructionType : data['案件類別'],
+                state: data['是否開工'],
                 date : {
                     start : {
                         year : convertedPart.date.start.year,
@@ -140,9 +146,10 @@ const TaichungRCIApp = ()=>{
             let newData = [];
             console.log('pick working projects from ' + data.length);
             for(let i = 0; i < _data.length; i++){
-                if(_data[i]['是否開工'] === '是'){
-                    newData.push(reconstructData(_data[i]));
-                }
+                // if(_data[i]['是否開工'] === '是'){
+                //     newData.push(reconstructData(_data[i]));
+                // }
+                newData.push(reconstructData(_data[i]));
             }
 
             totalNum = newData.length;
@@ -159,7 +166,7 @@ const TaichungRCIApp = ()=>{
             .then((response) => response.json())
             .then((data)=>{
                 let newData = pickWorkingProject(data);
-                setConstructionsData([newData[0],newData[1]]);
+                setConstructionsData(newData);
             });
         }
 
@@ -221,59 +228,6 @@ const TaichungRCIApp = ()=>{
         let newData = searchData(condition);
         return [sliceData(newData),newData.length];
     },[condition, constructionsData]);
-
-    // const pickOptions = ()=>{
-    //     console.log("pickOptions() : start");
-    //         let data = constructionsData[0];
-    //         let length = constructionsData[1];
-    //         let optionsStack = condition.stack;
-    //         let options = {distriction:[], pipeType:[], date:{start:{},end:{}}};
-    //         if(optionsStack.length === 0){
-    //             let i = 0;
-    //             options.distriction.push(data[0][0].distriction);
-    //             options.pipeType.push(data[0][0].pipeType);
-    //             options.date.start = {...data[0][0].start};
-    //             options.date.end = {...data[0][0].end};
-    //             do{
-    //                 let _dist = data[Math.floor(i/10)][i%10].distriction;
-    //                 let _pipe = data[Math.floor(i/10)][i%10].pipeType;
-    //                 if(options.distriction.indexOf(_dist) === -1) options.distriction.push(_dist);
-    //                 if(options.pipeType.indexOf(_pipe) === -1) options.pipeType.push(_pipe);
-    //                 i++;
-    //             }while(i<length)
-    //         }else if(optionsStack.length >= 1){
-    //             let i = 0;
-    //             let keep = optionsStack[0];
-    //             options[keep].push(data[0][0][keep]);
-    //             while(i<length){
-    //                 let singleData = data[Math.floor(i/10)][i%10];
-    //                 if(options[keep].indexOf(singleData[keep]) === -1){
-    //                     options[keep].push(singleData[keep]);
-    //                 }
-    //                 i++;
-    //             }
-                
-    //             //shallow copy with spread syntax(...)
-    //             let changed = {...condition};
-    //             delete changed.stack;
-    //             delete changed[keep];
-    //             changed = Object.keys(changed)[0];
-
-    //             data = conditionedChange[0];
-    //             length = conditionedChange[1];
-    //             i=0;
-    //             options[changed].push(data[0][0][changed]);
-    //             while(i < length){
-    //                 let singleData = data[Math.floor(i/10)][i%10];
-    //                 if(options[changed].indexOf(singleData[changed]) === -1){
-    //                     options[changed].push(singleData[changed]);
-    //                 }
-    //                 i++;
-    //             }
-    //         }
-    //         console.log("pickOptions() : \n"+options.distriction+'\n'+options.pipeType);
-    //         return options;
-    // }
 
     const pickSelectOptions = ()=>{
         console.log('pick options (dist & date)');
@@ -370,8 +324,11 @@ const TaichungRCIApp = ()=>{
         return(
             <div>
                 {console.log('TaichungRCIApp : loading layout')}
-                <Map constructionsData={constructionsData[0]} center={constructionLocation} path={constructionPolygon}/>
-                <InfoBlock value = {constructionsData[0]}>
+                <Map constructionsData={constructionsData[0]} 
+                    mapParameters={mapParameters}
+                    setMapParameters={setMapParameters}
+                />
+                <InfoBlock value={constructionsData[0]}>
                 </InfoBlock>
             </div>
         );
@@ -385,15 +342,18 @@ const TaichungRCIApp = ()=>{
         return(
             <div className='container'>
                 {console.log('TaichungRCIApp : default layout')}
-                <Map constructionsData={data[0]} center={constructionLocation} path={constructionPolygon}/>
-                <InfoBlock value = {data[0]}
-                          length = {data[1]}
-                          condition = {condition}
-                          setCondition = {setCondition}
-                          option = {pickSelectOptions()}
-                          setConstructionLocation = {setConstructionLocation}
-                          setConstructionPolygon = {setConstructionPolygon}>
-                </InfoBlock>
+                <Map constructionsData={data[0]}
+                    mapParameters={mapParameters}
+                    setMapParameters={setMapParameters}
+                />
+                <InfoBlock value={data[0]}
+                          length={data[1]}
+                          condition={condition}
+                          setCondition={setCondition}
+                          option={pickSelectOptions()}
+                          mapParameters={mapParameters}
+                          setMapParameters={setMapParameters}
+                />
             </div>
         );
     }

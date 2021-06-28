@@ -1,5 +1,6 @@
 import { useState } from "react";
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import zh_TW from 'date-fns/locale/zh-TW';
 import "react-datepicker/dist/react-datepicker.css";
 
 const Selectors = (props)=>{
@@ -7,12 +8,24 @@ const Selectors = (props)=>{
     const [dateRange, setDateRange] = useState([null, null]);
     const [startDate, endDate] = dateRange;
     const [dateOnPicker,setDateOnPicker] = useState('');
-    const {options, condition, setCondition, setPageIndex}= props;
+    const {options, condition, mapParameters, setCondition, setPageIndex, setMapParameters}= props;
+
+    registerLocale('zh-TW',zh_TW);
 
     const addZero2String = (time)=>{
         let _time = typeof time === "number" ? time.toString() : time;
         if(_time.length === 1) _time = '0'+_time;
         return _time;
+    }
+
+    const clearMapInfo = ()=>{
+        setMapParameters({
+            center: mapParameters.center,
+            polygon: null,
+            zoom: 11,
+            selectMarker: mapParameters.selectMarker,
+            closeInfoWindow: true
+        });
     }
 
     console.log('Selectors : '+condition.distriction);
@@ -38,6 +51,8 @@ const Selectors = (props)=>{
                 }
             }
         }
+
+        clearMapInfo();
         setPageIndex(0);
         if(_dateOnPicker !== '') setDateOnPicker(`${startDate.year}/${addZero2String(startDate.month)}/${addZero2String(startDate.day)} - ${endDate.year}/${addZero2String(endDate.month)}/${addZero2String(endDate.day)}`);
         setCondition({distriction:dist,
@@ -69,6 +84,8 @@ const Selectors = (props)=>{
                     document.getElementById('districtionSelects').value = 0;
                 }
             }
+
+            clearMapInfo();
             setDateOnPicker('');
             setCondition({distriction:_dist, date:{start: null, end: null}, stack:stack});
             return;
@@ -78,6 +95,7 @@ const Selectors = (props)=>{
         let endDate = {year: update[1].getFullYear(), month: update[1].getMonth() + 1, day: update[1].getDate()}
         let stack = condition.stack;
         if(stack.indexOf('date') === -1) stack.push('date');
+        clearMapInfo();
         setDateOnPicker(`${startDate.year}/${addZero2String(startDate.month)}/${addZero2String(startDate.day)} - ${endDate.year}/${addZero2String(endDate.month)}/${addZero2String(endDate.day)}`);
         setCondition({distriction:dist, date:{start: {...startDate}, end: {...endDate}}, stack:stack});
     }
@@ -86,37 +104,35 @@ const Selectors = (props)=>{
     console.log('Selectors : render start');
     return(
         <div className='selectors'>
-            <div>
-                <select name='distriction'
-                        id='districtionSelects'
-                        onChange={handleDistChange}
-                >
-                    <option value={0}>全地區</option>
-                    {
-                        distArr.map((i)=>(
-                            <option value={options.distriction[i]} key={options.distriction[i]}>{options.distriction[i]}</option>
-                        ))
-                    }
-                </select>
-                <DatePicker
-                    value={dateOnPicker}
-                    wrapperClassName='wrapperTaker'
-                    className='hellTacker'
-                    placeholderText='日期範圍'
-                    dateFormat='yyyy/MM/dd'
-                    selectsRange={true}
-                    startDate={startDate}
-                    endDate={endDate}
-                    minDate={new Date(Object.values(options.date.start))}
-                    maxDate={new Date(Object.values(options.date.end))}
-                    isClearable
-                    shouldCloseOnSelect={false}
-                    onFocus={()=>{
-                        console.log('calender on focus');
-                    }}
-                    onChange={handleDateChange}
-                />
-            </div>
+            <select name='distriction'
+                    id='districtionSelects'
+                    onChange={handleDistChange}
+            >
+                <option value={0}>全地區</option>
+                {
+                    distArr.map((i)=>(
+                        <option value={options.distriction[i]} key={options.distriction[i]}>{options.distriction[i]}</option>
+                    ))
+                }
+            </select>
+            <DatePicker
+                value={dateOnPicker}
+                locale='zh-TW'
+                wrapperClassName='wrapperTaker'
+                className='hellTacker'
+                placeholderText='日期範圍'
+                dateFormat='yyyy/MM/dd'
+                selectsRange={true}
+                startDate={startDate}
+                endDate={endDate}
+                minDate={new Date(Object.values(options.date.start))}
+                maxDat
+                e={new Date(Object.values(options.date.end))}
+                isClearable
+                shouldCloseOnSelect={false}
+                onChange={handleDateChange}
+                onFocus={e => e.target.blur()}
+            />
         </div>
     );
 }

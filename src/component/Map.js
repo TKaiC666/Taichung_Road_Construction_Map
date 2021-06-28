@@ -1,23 +1,14 @@
 import React, { useRef, useState } from 'react';
 import {GoogleMap, LoadScript, InfoWindow, MarkerClusterer, Marker, Polygon} from '@react-google-maps/api';
-import Card from './Card';
+import CardMini from './CardMini';
 
 const Map = (props)=>{
-    const [selectMarker, setSelectMarker] = useState(null);
     const [gridSize, setGridSize] = useState(60);
+    const {constructionsData, mapParameters, setMapParameters} = props;
     const mapRef = useRef(null);
-    const constructionsData = props.constructionsData;
+    const dataRef = useRef(null);
     const APIKey = 'AIzaSyAD3EMZ4E3XEei4WDxlpEaUpiPeOCm5cIQ';
-    let center = props.center === undefined ? {lat : 24.1512535, lng : 120.6617366} : { lat : props.center.lat, lng : props.center.lng};
-    let zoom = 11;
-    let path = props.path;
-    let markers;
     let isClusterWork = (constructionsData !== null) && (constructionsData.length !== 0) ? true : false;
-
-    if(constructionsData !== null && constructionsData.length !== 0){
-        let markersNum = (constructionsData.length-1)*10 + constructionsData[(constructionsData.length-1)].length;
-        markers = Array.from({length : markersNum},(_,index)=>index);
-    }
 
     const changeGridSize = ()=>{
         let size = 60;
@@ -26,38 +17,92 @@ const Map = (props)=>{
         else size = 60;
         setGridSize(size);
     }
+
+    const handleMapOnLoad = (map)=>{
+        mapRef.current = map;
+    }
+
+    const handleMarkerClick = (i)=>{
+        // center = mapRef.current.center;
+        let data = constructionsData[Math.floor(i/10)][i%10];
+        let newCenter = mapRef.current.getCenter().toJSON();
+        
+        setMapParameters({
+            center: newCenter,
+            polygon: data.coordinate.polygon,
+            zoom: mapParameters.zoom,
+            selectMarker: data,
+            closeInfoWindow: false
+        });
+    }
+
+    const handleInfoWindowOnCloseClick = ()=>{
+        setMapParameters({
+            center: mapParameters.center,
+            polygon: mapParameters.polygon,
+            zoom: mapParameters.zoom,
+            selectMarker: null,
+            closeInfoWindow: true
+        });
+    }
+
+    const isInfoWindowShow = ()=>{
+        let bool = false;
+        if(mapParameters.closeInfoWindow === true) bool = false;
+        else if(mapParameters.selectMarker !== null) bool = true;
+        console.log('selectMarker = '+mapParameters.selectMarker+', closeInfoWindow : '+mapParameters.closeInfoWindow);
+        return bool;
+    }
     
+    const renderMarker = (cluster)=>{
+        let markersNum = (constructionsData.length-1)*10 + constructionsData[(constructionsData.length-1)].length;
+        let markers = Array.from({length : markersNum},(_,index)=>index);
+        
+        return(
+            markers.map((i)=>(
+                (constructionsData[Math.floor(i/10)][i%10].coordinate.lat !== 0 && constructionsData[Math.floor(i/10)][i%10].coordinate.lng !== 0) &&
+                    <Marker key={'marker_'+i} 
+                            position={{lat: Number(constructionsData[Math.floor(i/10)][i%10].coordinate.lat), lng: Number(constructionsData[Math.floor(i/10)][i%10].coordinate.lng)}}
+                            onClick={()=>handleMarkerClick(i)}
+                            clusterer={cluster}
+                            noClustererRedraw={true}
+                    />
+            ))
+        );
+    }
+
     return(
         <div className='mapContainer'>
+        {console.log('map render : '+dataRef.current)}
         <LoadScript googleMapsApiKey={APIKey}>
             <GoogleMap
                 mapContainerStyle={{
                     height: '100vh',
                     width: 'calc(100% - 546px)'
                 }}
-                zoom={zoom}
-                center={center}
+                zoom={mapParameters.zoom}
+                center={mapParameters.center}
                 options={{ 
                     styles : mapStyle,
-                    maxZoom : 20,
                     minZoom : 11,
+                    maxZoom : 20,
                     disableDefaultUI : true
                 }}
-                onLoad={(map)=>{mapRef.current = map;}}
+                onLoad={(map)=>{handleMapOnLoad(map)}}
                 onZoomChanged={changeGridSize}
-                // onCenterChanged={()=>{
-                //     if(!mapRef.current) return;
-                //     console.log(mapRef.current.getCenter().toJSON());
-                // }}
             >
-                {console.log('map render')}
-                { isClusterWork && 
+                {/* { isClusterWork && 
                     <MarkerClusterer 
+                        averageCenter={true}
                         options={clustersOptions} 
                         gridSize={gridSize}
                     >
-                    {(cluster)=>
-                        markers.map((i)=>(
+                    {(cluster)=>{
+                        
+                        let markersNum = (constructionsData.length-1)*10 + constructionsData[(constructionsData.length-1)].length;
+                        let markers = Array.from({length : markersNum},(_,index)=>index);
+                        return(markers.map((i)=>(
+                        (constructionsData[Math.floor(i/10)][i%10].coordinate.lat !== 0 && constructionsData[Math.floor(i/10)][i%10].coordinate.lng !== 0) &&
                         <Marker key={'marker_'+i} 
                                 position={{lat: Number(constructionsData[Math.floor(i/10)][i%10].coordinate.lat), lng: Number(constructionsData[Math.floor(i/10)][i%10].coordinate.lng)}}
                                 clusterer={cluster}
@@ -65,23 +110,42 @@ const Map = (props)=>{
                                 //     url:'img/cones.png',
                                 //     scaledSize : {width:37, height:37}
                                 // }}
-                                onClick={()=>{
-                                    setSelectMarker(constructionsData[Math.floor(i/10)][i%10]);
-                                }}
-                        />))
+                                onClick={()=>handleMarkerClick(i)}
+                        />)));
+                    }}
+                    </MarkerClusterer>
+                } */}
+                {/* {
+                    isClusterWork && 
+                    <MarkerClusterer
+                    averageCenter={true}
+                    options={clustersOptions} 
+                    gridSize={gridSize}
+                    >
+                    {
+                        cluster => renderMarker(cluster)
                     }
                     </MarkerClusterer>
+                } */}
+                {
+                   constructionsData && renderMarker()
                 }
-                { selectMarker && (
+                { isInfoWindowShow() && (
                     <InfoWindow
-                        position={{lat:selectMarker.coordinate.lat, lng:selectMarker.coordinate.lng}}
-                        onCloseClick={()=>{setSelectMarker(null)}}
+                        position={{lat: mapParameters.selectMarker.coordinate.lat, lng: mapParameters.selectMarker.coordinate.lng}}
+                        options={{
+                            pixelOffset : new window.google.maps.Size(0,-45)
+                        }}
+                        onCloseClick={handleInfoWindowOnCloseClick}
                     >
-                        <Card key="markerInfo"
-                            value={selectMarker}/>
+                        <CardMini value={mapParameters.selectMarker}/>
                     </InfoWindow>
                 )}
-                <Polygon path={path} options={polygonOptions}/>
+                {
+                    mapParameters.polygon && (
+                        <Polygon path={mapParameters.polygon} options={polygonOptions}/>
+                    )
+                }
             </GoogleMap>
         </LoadScript>
         </div>

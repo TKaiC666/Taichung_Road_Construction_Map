@@ -4,28 +4,20 @@ const Card = (props)=>{
     let data = props.value;
 
     const [showLess, setShowLess] = useState(true);
+    const {mapParameters, setMapParameters} = props;
     const handleClick = ()=>{
         setShowLess(!showLess);
     }
 
-    const handleLocationData = (coord, polygon)=>{
-        props.setConstructionLocation({lat : coord.lat, lng : coord.lng});
-        props.setConstructionPolygon(polygon);
+    const handleLocationData = ()=>{
+        setMapParameters({
+            center: data.coordinate,
+            polygon: data.coordinate.polygon,
+            zoom: mapParameters.zoom,
+            selectMarker: data,
+            closeInfoWindow: false
+        });
     }
-
-    // const pipeColor = (pipeName)=>{
-    //     switch(pipeName){
-    //         case '電力': return('#ffee58');
-    //         case '電信': return('#ffca58');
-    //         case '自來水': return('#95d8ff');
-    //         case '污水下水道': return('#b5ffac');
-    //         case '瓦斯': return('#ecadff');
-    //         case '軍訊': return('#5a8f66');
-    //         case '警訊': return('#5975b1');
-    //         case '緊急性挖掘': return('#ff8c8c');
-    //         default : return('#c7c7c7');
-    //     }
-    // }
 
     if(data === 'loading'){
         return(
@@ -39,7 +31,7 @@ const Card = (props)=>{
             <div className='card-meta'>
                 <div className='card-meta-title'>
                     <div className='highlighter bgColor_mintGreen-light' style={{width:data.pipeType.length+'em'}}></div>
-                    <div className='dist'>{data.distriction}</div>
+                    <div className={`state ${data.state === '是' ? 'working' : 'notWorking'}`}>{data.state === '是' ? '施工中' : '未施工'}</div>
                     <div className='pipeType' style={{position:'relative'}}>
                         {data.pipeType}
                     </div>
@@ -58,9 +50,10 @@ const Card = (props)=>{
                     </div>
                 </div>
                 <div className='buttons'>
-                    <div title='顯示位置' className='buttons-locate' onClick={()=>{handleLocationData(data.coordinate, data.coordinate.polygon)}}>
+                    {(data.coordinate.lat !== 0 && data.coordinate.lat !== 0) &&
+                    <div title='顯示位置' className='buttons-locate' onClick={()=>{handleLocationData()}}>
                         <i className="fas fa-map-marker-alt"/>
-                    </div>
+                    </div>}
                     <div title='更多資訊' className={showLess ? 'buttons-moreInfo' : 'buttons-moreInfoClicked'} onClick={()=>{handleClick()}}>
                         <i className={`fas ${showLess ? 'fa-angle-double-down' : 'fa-angle-double-up'}`}/>
                     </div>
@@ -99,6 +92,20 @@ const Card = (props)=>{
             </div>
         </div>
     );
+}
+
+const pipeColor = (pipeName)=>{
+    switch(pipeName){
+        case '電力': return('#ffee58');
+        case '電信': return('#ffca58');
+        case '自來水': return('#95d8ff');
+        case '污水下水道': return('#b5ffac');
+        case '瓦斯': return('#ecadff');
+        case '軍訊': return('#5a8f66');
+        case '警訊': return('#5975b1');
+        case '緊急性挖掘': return('#ff8c8c');
+        default : return('#c7c7c7');
+    }
 }
 
 export default Card;

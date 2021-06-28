@@ -26,6 +26,7 @@ const InfoBlock = (props)=>{
 
     const handleClick = (x)=>{
         if(x > props.value.length-1 || x < 0) return;
+        document.getElementById('topAnchor').scrollIntoView();
         setPageIndex(x);
     }
 
@@ -46,7 +47,7 @@ const InfoBlock = (props)=>{
             </div>
             </div>
         );
-    }else if(props.value.length === 0){
+    }else if(props.value.length === 0 || props.value.length === null){
         return(
             <div className='infoBlockContainer'>
             <div className='infoBlock'>
@@ -54,13 +55,16 @@ const InfoBlock = (props)=>{
                     <Selectors
                         options={props.option}
                         condition={props.condition}
+                        mapParameters={props.mapParameters}
                         setCondition={props.setCondition}
+                        setMapParameters={props.setMapParameters}
+                        setPageIndex={setPageIndex}
                     />
                 </div>
                 <div className='cardListContainer'>
                 <div className='cardsList'>
                     <div className='noContent'>
-                        查無資料
+                        沒有符合條件的資料
                     </div>
                 </div>
                 </div>
@@ -78,8 +82,10 @@ const InfoBlock = (props)=>{
                     <Selectors
                         options={props.option}
                         condition={props.condition}
+                        mapParameters={props.mapParameters}
                         setCondition={props.setCondition}
                         setPageIndex={setPageIndex}
+                        setMapParameters={props.setMapParameters}
                     />
                     <Pagination
                         // margin={'marginBottom-2'}
@@ -95,9 +101,8 @@ const InfoBlock = (props)=>{
                     cardsNum.map((i)=>(
                         <Card key={'card'+(pageIndex*10+i+1)}
                             value={props.value[pageIndex][i]}
-                            anchor={i}
-                            setConstructionLocation={props.setConstructionLocation}
-                            setConstructionPolygon = {props.setConstructionPolygon}
+                            mapParameters={props.mapParameters}
+                            setMapParameters={props.setMapParameters}
                         />
                     ))
                 }

@@ -6,19 +6,88 @@
   src: url(./font/jf-openhuninn-1.1.ttf);
 }
 
+$infoBlock-padding : 2em;
+$infoBlock-gap : 20px;
+
 html,body{
     margin: 0;
     padding: 0;
     text-decoration: none;
     background-color: #e4e4e4;
-    font-size: 16px;
     font-family: 'Noto Sans TC', sans-serif;
     // font-family: 'js-openhuninn', sans-serif;
     font-weight: 400;
 }
 
+@media (min-width: 1025px) {
+    html,body{
+        font-size: 16px;
+    }
+    .toolbarContainer{
+        width: 450px;
+    }
+    .cardsList{
+        width: 460px;
+    }
+    .infoBlock{
+        width: calc(450px + #{$infoBlock-padding} * 2);
+    }
+    .cardMini{
+        width: 350px;
+        font-size: 18px;
+        i{
+            padding: 0 0.75em;
+        }
+    }
+}
+@media (max-width: 1024px) {
+    html,body{
+        font-size: 12px;
+    }
+    .toolbarContainer{
+        width: 300px;
+    }
+    .cardsList{
+        width: 310px;
+    }
+    .infoBlock{
+        width: calc(300px + #{$infoBlock-padding} * 2);
+    }
+    .cardMini{
+        width: 280px;
+        font-size: 18px;
+        i{
+            padding: 0 0.75em;
+        }
+    }
+}
+@media (max-width: 768px) {
+    .toolbarContainer{
+        width: inherit;
+    }
+    .cardsList{
+        width: 260px;
+    }
+    .infoBlock{
+        width: calc(250px + #{$infoBlock-padding} * 2);
+    }
+}
+@media (max-width: 428px) {
+    .cardMini{
+        width: inherit;
+        font-size: 14px;
+        padding-right: 20px;
+        .date{
+            i{
+                padding: 0 10px;
+            }
+        }
+    }
+}
+
 ::-webkit-scrollbar{
     width: 10px;
+    margin-right: 10px;
     &-track{
         border-radius: 10px;
         background-color: #f6f6f6;
@@ -36,31 +105,72 @@ html,body{
     background-color: $mintGreen-light;
 }
 
-.infoMap{
-    border: 0;
-    margin: 0;
-    padding: 0;
-    width: calc(100% - 460px - 6em);
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
-
-.toolbarContainer{
-    width: 450px;
-    padding: 0 3em;
-}
-
-.pagination{
-    margin-top: 2em;
-    text-align: center;
+.unselectable{
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.mapContainer{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    *{
+        .gm-style-cc { display:none; }
+        .gm-style a[href^="https://maps.google.com/maps"] {
+            display: none !important;
+        }
+        .gm-ui-hover-effect img {
+            width: 20px !important;
+            height: 20px !important;
+        }
+        .gm-ui-hover-effect {
+            top: 0px !important;
+            right: 5px !important;
+        }
+    }
+}
+
+.infoButtonContainer{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 20px;
+}
+
+.infoButton{
+    width: 65px;
+    line-height: 65px;
+    border-radius: 50px;
+    background-color: $white;
+    font-size: 20px;
+    text-align: center;
+    vertical-align: middle;
+    box-shadow: 0px 0px 10px 1px $boxShadow;
+    color: $orange;
+}
+
+.visible{
+    visibility: visible;
+}
+
+.unvisible{
+    visibility: hidden;
+}
+
+.toolbarContainer{
+    // width: 450px;
+    padding: 0 $infoBlock-padding;
+}
+
+.pagination{
+    margin-top: 1.5em;
+    text-align: center;
 
     .pageElement{
         font-size: 16px;
@@ -136,17 +246,17 @@ html,body{
     }
 }
 
-.cardListContainer{
+.cardsListContainer{
     position: relative;
     flex-grow: 1;
 }
 
 .cardsList{
     position: absolute;
-    width: 460px;
-    height: calc(100% - 4px - 5em);
-    margin-top: 2em;
-    padding: 0 calc(3em - 10px) 3em 3em;
+    // width: 460px;
+    height: calc(100% - 4px - 2em - #{$infoBlock-gap});
+    margin-top: 1.5em;
+    padding: 0 calc(#{$infoBlock-padding} - 10px) $infoBlock-padding $infoBlock-padding;
     overflow-y: scroll;
     border-top: 1px solid $line;
 }
@@ -175,26 +285,28 @@ html,body{
 
 .infoBlockContainer{
     position: fixed;
-    top: 0;
-    right: 0;
+    top: $infoBlock-gap;
+    left: $infoBlock-gap;
 }
 
 .infoBlock {
     //這邊很奇怪。用google chrome和edge的開發者工具看，width會比CSS設置的少10px。
-    //但是firefox是正常410px。
-    width: calc(450px + 6em);
-    height: calc(100vh - 3em);
+    //但是firefox是正常的。
+    //0705註記 : 我想是scrollbar有沒有算進去的關係，chrome和edge會包含scrollbar，firefox則不會。
+    // width: calc(450px + #{$padding-infoBlock} * 2);
+    height: calc(100vh - 3em - #{$infoBlock-gap});
     display: flex;
     flex-flow: column;
-    padding-top: 3em;
+    padding-top: $infoBlock-padding;
     background-color: $bg;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px 5px $boxShadow;
+    overflow: hidden;
 }
 
 .card {
     margin: 0 auto 2em;
     padding: 2em;
-    width: calc(450px - 4em);
     background-color: $white;
     box-shadow: 0px 2px 5px 1px $boxShadow;
     transition: all 0.3s;
@@ -222,8 +334,7 @@ html,body{
     .highlighter{
         position: relative;
         top: 1.7em;
-        left: 4.5em;
-        width: 7em;
+        left: calc(72px + 1em);
         height: 0.85em;
         margin-top: -0.85em;
         border-radius: 0.4em;
@@ -235,11 +346,10 @@ html,body{
             line-height: 1.5em;
             .state{
                 display: inline-block;
-                vertical-align: sub;
+                width: 62px;
                 vertical-align: middle;
-                width: 62px; // 400px : 55px
                 margin-right:1.5em;
-                padding: 0 5px;
+                padding: 0px 5px;
                 font-size: 0.8em;
                 letter-spacing: 2px;
                 //---把最後一個字的letter-space空間去除
@@ -259,7 +369,7 @@ html,body{
             .pipeType{
                 display: inline-block;
                 font-size: 1.2em;
-                width: calc(400px - 56px - 93px);
+                // width: calc(400px - 56px - 93px);
                 font-weight: 500;
                 vertical-align: middle;
                 letter-spacing: 2px;
@@ -272,7 +382,7 @@ html,body{
                 span{
                     font-size: 1.5em;
                     font-weight: 700;
-                    letter-spacing: 2.5px;
+                    letter-spacing: 1px;
                 }
                 .slash::after{
                     content: '/';
@@ -374,13 +484,11 @@ html,body{
 }
 
 .cardMini{
-    width: 350px;
-    padding: 0 15px;
+    padding: 0 5px;
     font-weight: 400;
-    font-size: 18px;
 
     .title{
-        margin: 15px 0px;
+        margin: 0px 0px 15px;
     }
     .item{
         font-size: 0.85em;
@@ -403,26 +511,26 @@ html,body{
         margin-bottom: 15px;
         letter-spacing: 2px;
     }
+    .last{
+        margin-bottom: 10px;
+    }
     .date{
         span{
             font-size: 1.2em;
             font-weight: 700;
-            letter-spacing: 2.5px;
         }
         .slash::after{
             content: '/';
             color: $minor;
             font-weight: 500;
             font-size: 0.5em;
-            padding: 0 0.1em;
+            padding: 0 1px;
         }
         i{
             color: $minor;
-            padding: 0 0.75em;
         }
     }
     .state{
-        vertical-align: sub;
         vertical-align: middle;
         width: 62px; // 400px : 55px
         padding: 5px 5px;
@@ -445,9 +553,16 @@ html,body{
 }
 
 .noContent{
-    text-align: center;
+    text-align: left;
     letter-spacing: 3px;
     padding: 2em;
+    color: $minor;
+    font-size: 2em;
+}
+
+.serverError{
+    margin-top: calc(50vh - 2em);
+    text-align: center;
     color: $minor;
     font-size: 2em;
 }

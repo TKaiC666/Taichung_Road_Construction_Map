@@ -17,7 +17,7 @@ const Pagination = (props)=>{
         if(pageIndex - minPageIndex > 3 && maxPageIndex - pageIndex > 3){
             let pages = Array.from({length:3},(_,index)=>index+pageIndex-1);
             returnElement = 
-            <div className={`pagination ${margin}`}>
+            <div className={`pagination unselectable ${margin}`}>
                 <div className='pageElement pageArrow' key={`prePage`}
                     onClick={()=>{handleBtnClick(pageIndex-1)}}>
                     <i className="fas fa-chevron-left"/>
@@ -51,7 +51,7 @@ const Pagination = (props)=>{
         }else if(pageIndex - minPageIndex <= 3){
             let pages = Array.from({length:5},(_,index)=>index);
             returnElement = 
-            <div className={`pagination ${margin}`}>
+            <div className={`pagination unselectable ${margin}`}>
                 <div className='pageElement pageArrow' key={`prePage`}
                     style={pageIndex===minPageIndex ? {visibility: 'hidden'} : {}}
                     onClick={()=>{handleBtnClick(pageIndex-1)}}>
@@ -80,7 +80,7 @@ const Pagination = (props)=>{
         }else if(maxPageIndex - pageIndex <= 3){
             let pages = Array.from({length:5},(_,index)=>index+maxPageIndex-4);
             returnElement = 
-            <div className={`pagination ${margin}`}>
+            <div className={`pagination unselectable ${margin}`}>
                 <div className='pageElement pageArrow' key={`prePage`}
                     onClick={()=>{handleBtnClick(pageIndex-1)}}>
                     <i className="fas fa-chevron-left"/>
@@ -110,7 +110,7 @@ const Pagination = (props)=>{
     }
     else{
         returnElement = 
-        <div className={`pagination ${margin}`}>
+        <div className={`pagination unselectable ${margin}`}>
             {
                 pageBtns.map((i)=>(
                     <div key={'page-'+(i+1)}

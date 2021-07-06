@@ -32,24 +32,34 @@ const InfoBlock = (props)=>{
 
     console.log('InfoBlock : page index : '+pageIndex+', cardsNum : '+cardsNum);
 
-    if(props.value === null){
+    if(props.value === 'loading'){
         return(
-            <div className='infoBlockContainer'>
+            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
             <div className='infoBlock'>
                 <div className='cardListContainer'>
                 <div className='cardsList'>
-                    <div id='topAnchor' style={{marginBottom:'2em'}}/>
-                    <Card value={'loading'}/>
-                    <Card value={'loading'}/>
-                    <Card value={'loading'}/>
                 </div>
                 </div>
             </div>
             </div>
         );
-    }else if(props.value.length === 0 || props.value.length === null){
+    }else if(props.value === null){
         return(
-            <div className='infoBlockContainer'>
+            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
+            <div className='infoBlock'>
+                <div className='cardListContainer'>
+                <div className='cardsList'>
+                    <div className='noContent'>
+                        {'伺服器回傳錯誤，\n請稍後在試。'}
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        );
+    }else if(props.value.length === 0){
+        return(
+            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
             <div className='infoBlock'>
                 <div className='toolbarContainer'>
                     <Selectors
@@ -61,7 +71,7 @@ const InfoBlock = (props)=>{
                         setPageIndex={setPageIndex}
                     />
                 </div>
-                <div className='cardListContainer'>
+                <div className='cardsListContainer'>
                 <div className='cardsList'>
                     <div className='noContent'>
                         沒有符合條件的資料
@@ -76,7 +86,7 @@ const InfoBlock = (props)=>{
         let pageBtns = Array.from({length: props.value.length},(_,index)=>index);
         console.log('InfoBlock : render start');
         return(
-            <div className='infoBlockContainer'>
+            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
             <div className='infoBlock'>
                 <div className='toolbarContainer'>
                     <Selectors
@@ -94,7 +104,7 @@ const InfoBlock = (props)=>{
                         handleClick={handleClick}
                     />
                 </div>
-                <div className='cardListContainer'>
+                <div className='cardsListContainer'>
                 <div className='cardsList'>
                     <div id='topAnchor' style={{marginBottom:'2em'}}/>
                 {

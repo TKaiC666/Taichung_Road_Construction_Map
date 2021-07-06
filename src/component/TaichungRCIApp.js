@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Map from './Map'
+import InfoButton from './InfoButton';
 import InfoBlock from './InfoBlock';
 
 const TaichungRCIApp = ()=>{
     console.log('TaichungRCIApp : start');
-    const [constructionsData, setConstructionsData] = useState([null,null]);
-    const [condition, setCondition] = useState({distriction:0, date:{start:null,end:null}, stack:[]});
+    const [constructionsData, setConstructionsData] = useState('loading');
+    const [condition, setCondition] = useState({workingState:'是', distriction:0, date:{start:null,end:null}, stack:['workingState']});
+    const [showInfoBlock, setShowInfoBlock] = useState(null);
     const [mapParameters, setMapParameters] = useState({
         center:{lat : 24.1512535, lng : 120.6617366},
         polygon: null,
-        zoom: 11,
+        zoom: 12,
         selectMarker: null,
         closeInfoWindow: null
     });
@@ -106,7 +108,7 @@ const TaichungRCIApp = ()=>{
                 address : data['地點'],
                 pipeType : data['管線工程類別'],
                 constructionType : data['案件類別'],
-                state: data['是否開工'],
+                workingState: data['是否開工'],
                 date : {
                     start : {
                         year : convertedPart.date.start.year,
@@ -140,34 +142,44 @@ const TaichungRCIApp = ()=>{
             return newData;
         }
 
-        const pickWorkingProject = (data)=>{
+        const handleData = (data)=>{
             let _data = data;
-            let totalNum = 0;
             let newData = [];
-            console.log('pick working projects from ' + data.length);
             for(let i = 0; i < _data.length; i++){
-                // if(_data[i]['是否開工'] === '是'){
-                //     newData.push(reconstructData(_data[i]));
-                // }
                 newData.push(reconstructData(_data[i]));
             }
-
-            totalNum = newData.length;
-            console.log(totalNum+' working projects');
-            newData = sliceData(newData);
-            return [newData, totalNum];
+            return(newData);
         }
 
         const fetchingData = ()=>{
             let url = 'https://datacenter.taichung.gov.tw/swagger/OpenData/863064b3-7678-437e-9161-8dcda3d95ab7';
+            //local testing
             let local = 'testing_Data.json';
+            let error = 'testing_server-error.json';
 
             fetch(local)
-            .then((response) => response.json())
+            .then((response) => {
+                if(response.status === 200){
+                    return(response.text());
+                }
+                throw new Error('Network response was not ok.');
+            })
             .then((data)=>{
-                let newData = pickWorkingProject(data);
-                setConstructionsData(newData);
+                //等API資料庫又500時，在做response.status和response.ok的測試
+                //這個辨識方法很白癡但很直接，500 internal server error會回傳使用html tag語法的字串
+                //所以只要看第一個字是否為<，就能確定是否為500。
+                if(data[0] === '<'){
+                    console.error('fetch error : API Internal Server Error');
+                    setConstructionsData(null);
+                }else{
+                    let newData = handleData(JSON.parse(data));
+                    setConstructionsData(newData);
+                }
+            }).catch((error)=>{
+                console.error('fetch error : ', error.message);
+                setConstructionsData(null);
             });
+            
         }
 
         fetchingData();
@@ -177,180 +189,220 @@ const TaichungRCIApp = ()=>{
         fetchData();
     },[fetchData]);
 
-    const conditionedChange = useMemo(()=>{
+    const filteredData = useMemo(()=>{
 
-        const searchData = (condition)=>{
-            console.log('searchData() : ');
+        const filteringData = (condition)=>{
+            console.log('filteringData() : ');
             console.log(condition);
-            let i = 0;
-            let dataLength = constructionsData[1];
-            let data = constructionsData[0];
+
+            let data = constructionsData;
             let newData = [];
-            if(condition.stack.length >= 2){
-                console.log('search both');
-                while(i < dataLength){
-                    if(data[Math.floor(i/10)][i%10].distriction === condition.distriction
-                       && ((convertDate2Num(condition.date.start) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
-                       && convertDate2Num(condition.date.start) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end))
-                       || (convertDate2Num(condition.date.end) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
-                       && convertDate2Num(condition.date.end) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end)))){
-                        newData.push(data[Math.floor(i/10)][i%10]);
-                    }
-                    i++;
+            if(data === null || data === 'loading'){
+                newData = data;
+            }else if(condition.stack.length === 3){
+                console.log('search all');
+                newData = data.filter((object) => (
+                    ((convertDate2Num(condition.date.start) >= convertDate2Num(object.date.start)
+                    && convertDate2Num(condition.date.start) <= convertDate2Num(object.date.end))
+                    || (convertDate2Num(condition.date.end) >= convertDate2Num(object.date.start)
+                    && convertDate2Num(condition.date.end) <= convertDate2Num(object.date.end)))
+                    && object.workingState === condition.workingState && object.distriction === condition.distriction
+                ));
+            }else if(condition.stack.length === 2){
+                if(condition.stack.indexOf('date') !== -1){
+                    let anotherCondition = condition.stack[1 - condition.stack.indexOf('date')];
+                    console.log('search date & '+anotherCondition);
+                    newData = data.filter((object) => (
+                        ((convertDate2Num(condition.date.start) >= convertDate2Num(object.date.start)
+                        && convertDate2Num(condition.date.start) <= convertDate2Num(object.date.end))
+                        || (convertDate2Num(condition.date.end) >= convertDate2Num(object.date.start)
+                        && convertDate2Num(condition.date.end) <= convertDate2Num(object.date.end))) &&
+                        object[anotherCondition] === condition[anotherCondition]
+                    ));
+                }else{
+                    console.log('search workingState & distriction');
+                    newData = data.filter((object) => (
+                        object.workingState === condition.workingState && object.distriction === condition.distriction
+                    ));
                 }
-            }else if(condition.distriction !== 0 ){
-                console.log('search distriction');
-                while(i < dataLength){
-                    if(data[Math.floor(i/10)][i%10].distriction === condition.distriction){
-                        newData.push(data[Math.floor(i/10)][i%10]);
-                    }
-                    i++;
-                }
-            }else if(condition.date.start !== null && condition.date.end !== null){
-                console.log('search date');
-                while(i < dataLength){
-                    if((convertDate2Num(condition.date.start) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
-                       && convertDate2Num(condition.date.start) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end))
-                       || (convertDate2Num(condition.date.end) >= convertDate2Num(data[Math.floor(i/10)][i%10].date.start)
-                       && convertDate2Num(condition.date.end) <= convertDate2Num(data[Math.floor(i/10)][i%10].date.end))){
-                        newData.push(data[Math.floor(i/10)][i%10]);
-                    }
-                    i++;
+            }else if(condition.stack.length === 1){
+                if(condition.distriction !== 0 ){
+                    console.log('search distriction');
+                    newData = data.filter((object) => object.distriction === condition.distriction);
+                }else if(condition.date.start !== null && condition.date.end !== null){
+                    console.log('search date');
+                    newData = data.filter((object) => (
+                        (convertDate2Num(condition.date.start) >= convertDate2Num(object.date.start)
+                           && convertDate2Num(condition.date.start) <= convertDate2Num(object.date.end))
+                           || (convertDate2Num(condition.date.end) >= convertDate2Num(object.date.start)
+                           && convertDate2Num(condition.date.end) <= convertDate2Num(object.date.end))
+                    ));
+                }else if(condition.workingState !== 0){
+                    console.log('search workingState');
+                    newData = data.filter((object) => object.workingState === condition.workingState);
                 }
             }
 
             return newData;
         };
 
-        console.log('TaichungRCIApp -> useMemo() : \ncondition been changed\n'+condition.distriction);
-        console.log(condition.date.start);
-        console.log(condition.date.end);
-        let newData = searchData(condition);
-        return [sliceData(newData),newData.length];
+        let newData = filteringData(condition);
+        console.log(newData);
+        return(newData);
     },[condition, constructionsData]);
 
-    const pickSelectOptions = ()=>{
-        console.log('pick options (dist & date)');
-        console.log(condition);
-        let data = constructionsData[0];
-        let length = constructionsData[1];
-        let optionsStack = condition.stack;
-        let options = {distriction:[], date:{start:{},end:{}}};
-        if(optionsStack.length === 0){
-            console.log('沒有條件，顯示全部選項');
-            let i = 0;
-            options.distriction.push(data[0][0].distriction);
-            options.date.start = {...data[0][0].date.start};
-            options.date.end = {...data[0][0].date.end};
-            do{
-                let _dist = data[Math.floor(i/10)][i%10].distriction;
-                let _startDate = {...data[Math.floor(i/10)][i%10].date.start};
-                let _endDate = {...data[Math.floor(i/10)][i%10].date.end};
-                if(options.distriction.indexOf(_dist) === -1) options.distriction.push(_dist);
-                if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
-                if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
-                i++;
-            }while(i < length)
-        }else if(optionsStack.length >= 1){
-            //條件篩選沒有符合的資料
-            if(conditionedChange[0].length === 0){
-                console.log('沒有符合的資料');
-                let i = 0;
-                options.date.start = {...data[0][0].date.start};
-                options.date.end = {...data[0][0].date.end};
-                do{
-                    let _startDate = {...data[Math.floor(i/10)][i%10].date.start};
-                    let _endDate = {...data[Math.floor(i/10)][i%10].date.end};
-                    if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
-                    if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
-                    i++;
-                }while(i < length)
-                options.distriction.push(condition.distriction);
-                return options;
+    const selectorsOptions = useMemo(()=>{
+        let _stack = condition.stack;
+        let _options = {workingState:[], distriction:[], date:{start:{},end:{}}};
+        if(_stack.length >= 0 && constructionsData !== 'loading'){
+            console.log('condition stack '+_stack.length);
+            console.log(constructionsData);
+            _options.date.start = {...constructionsData[0].date.start};
+            _options.date.end = {...constructionsData[0].date.end};
+            for(let object of constructionsData){
+                if(_options.workingState.indexOf(object.workingState) === -1) _options.workingState.push(object.workingState);
+                if(_options.distriction.indexOf(object.distriction) === -1)  _options.distriction.push(object.distriction);
+                if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
+                if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
             }
-            let singleCondition = optionsStack[0];
-            let i = 0;
-            //distriction和date的資料結構不同，不能用bracket notation來指定options的值
-            if(singleCondition === 'distriction'){
-                console.log('篩選地區選項');
-                let distDataList = conditionedChange[0];
-                let distDataLength = conditionedChange[1];
-                options.date.start = {...distDataList[0][0].date.start};
-                options.date.end = {...distDataList[0][0].date.end};
-                while(i < distDataLength){
-                    let _startDate = {...distDataList[Math.floor(i/10)][i%10].date.start};
-                    let _endDate = {...distDataList[Math.floor(i/10)][i%10].date.end};
-                    if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
-                    if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
-                    i++;
-                }
-                i=0;
-                options.distriction.push(data[0][0].distriction);
-                while(i < length){
-                    let _dist = data[Math.floor(i/10)][i%10].distriction;
-                    if(options.distriction.indexOf(_dist) === -1) options.distriction.push(_dist);
-                    i++;
+        }
+        console.log(_options);
+        return _options;
+    },[condition.stack, constructionsData]);
+
+    const pickOptions = ()=>{
+        let _stack = condition.stack;
+        let _options = {workingState:[], distriction:[], date:{start:{},end:{}}};
+        if(_stack.length === 3){
+            console.log('condition stack = '+_stack.length);
+            _options.date.start = {...filteredData[0].date.start};
+            _options.date.end = {...filteredData[0].date.end};
+            for(let object of filteredData){
+                if(_options.workingState.indexOf(object.workingState) === -1) _options.workingState.push(object.workingState);
+                if(_options.distriction.indexOf(object.distriction) === -1)  _options.distriction.push(object.distriction);
+                if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
+                if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
+            }
+        }
+        else if(_stack.length === 2){
+            console.log('condition stack = 2');
+            let firstCondition = condition.stack[0];
+            let secondCondition = condition.stack[1];
+            let lastCondition = null;
+            for(let key of Object.keys(condition)){
+                if(key !== firstCondition && key !== secondCondition && key !== 'stack'){
+                    lastCondition = key;
+                    break;
                 }
             }
-            else if(singleCondition === 'date'){
-                console.log('篩選時間選項 : ');
-                let dateDataList = conditionedChange[0];
-                let dateDataLength = conditionedChange[1];
-                options.distriction.push(dateDataList[0][0].distriction);
-                while(i < dateDataLength){
-                    let _dist = dateDataList[Math.floor(i/10)][i%10].distriction;
-                    if(options.distriction.indexOf(_dist) === -1) options.distriction.push(_dist);
-                    i++;
+            if(firstCondition === 'date'){
+                _options.date.start = {...constructionsData[0].date.start};
+                _options.date.end = {...constructionsData[0].date.end};
+                for(let object of constructionsData){
+                    if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
+                    if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
                 }
-                i=0;
-                options.date.start = {...data[0][0].date.start};
-                options.date.end = {...data[0][0].date.end};
-                while(i < length){
-                    let _startDate = {...data[Math.floor(i/10)][i%10].date.start};
-                    let _endDate = {...data[Math.floor(i/10)][i%10].date.end};
-                    if(convertDate2Num(_startDate) <= convertDate2Num(options.date.start)) options.date.start = {..._startDate};
-                    if(convertDate2Num(_endDate) >= convertDate2Num(options.date.end)) options.date.end = {..._endDate};
-                    i++;
+                for(let object of filteredData){
+                    if(_options[secondCondition].indexOf(object[secondCondition]) === -1) _options[secondCondition].push(object[secondCondition]);
+                    if(_options[lastCondition].indexOf(object[lastCondition]) === -1)  _options[lastCondition].push(object[lastCondition]);
+                }
+            }else{
+                for(let object of constructionsData){
+                    if(_options[firstCondition].indexOf(object[firstCondition]) === -1) _options[firstCondition].push(object[firstCondition]);
+                }
+                if(secondCondition === 'date'){
+
+                }else{
+                    let list = constructionsData.map((object)=>(object[secondCondition]));
+                    // let conditionedList = list.filter((object)=>())
                 }
             }
         }
-
-        console.log(options);
-        return options;
+        else if(_stack.length === 1){
+            console.log('condition stack = '+_stack.length);
+            let firstCondition = condition.stack[0];
+            if(firstCondition === 'date'){
+                _options.date.start = {...constructionsData[0].date.start};
+                _options.date.end = {...constructionsData[0].date.end};
+                for(let object of constructionsData){
+                    if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
+                    if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
+                }
+                for(let object of filteredData){
+                    if(_options.workingState.indexOf(object.workingState) === -1) _options.workingState.push(object.workingState);
+                    if(_options.distriction.indexOf(object.distriction) === -1)  _options.distriction.push(object.distriction);
+                }
+            }else{
+                let anotherCondition = firstCondition === 'distriction' ? 'workingState' :　'distriction';
+                console.log(firstCondition, anotherCondition);
+                for(let object of constructionsData){
+                    if(_options[firstCondition].indexOf(object[firstCondition]) === -1) _options[firstCondition].push(object[firstCondition]);
+                }
+                _options.date.start = {...filteredData[0].date.start};
+                _options.date.end = {...filteredData[0].date.end};
+                for(let object of filteredData){
+                    if(_options[anotherCondition].indexOf(object[anotherCondition]) === -1)  _options[anotherCondition].push(object[anotherCondition]);
+                    if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
+                    if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
+                }
+            }
+        }else if(_stack.length >= 0){
+            console.log('condition stack = 0');
+            _options.date.start = {...constructionsData[0].date.start};
+            _options.date.end = {...constructionsData[0].date.end};
+            for(let object of constructionsData){
+                if(_options.workingState.indexOf(object.workingState) === -1) _options.workingState.push(object.workingState);
+                if(_options.distriction.indexOf(object.distriction) === -1)  _options.distriction.push(object.distriction);
+                if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
+                if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
+            }
+        }
+        console.log(_options);
+        return _options;
     }
 
     console.log('TaichungRCIApp : rendering start');
-    if(constructionsData[0] === null){
+    if(constructionsData === 'loading'){
         return(
             <div>
                 {console.log('TaichungRCIApp : loading layout')}
-                <Map constructionsData={constructionsData[0]} 
+                <Map constructionsData={null} 
                     mapParameters={mapParameters}
                     setMapParameters={setMapParameters}
                 />
-                <InfoBlock value={constructionsData[0]}>
+                <InfoButton/>
+                <InfoBlock value={constructionsData}>
                 </InfoBlock>
+            </div>
+        );
+    }else if(constructionsData === null){
+        return(
+            <div className='serverError'>
+                {console.log('TaichungRCIApp : error layout')}
+                {'資料庫狀態異常，請稍後再試'}
             </div>
         );
     }else{
         let data = null;
-        if(condition.distriction === 0 && condition.date.start === null && condition.date.end === null) data = constructionsData;
-        else{
-            console.log('conditioned changed');
-            data = conditionedChange;
+        if(condition.distriction === 0 && condition.date.start === null && condition.date.end === null && condition.workingState === 0){
+            data = constructionsData;
+        }else{
+            data = filteredData;
         }
         return(
             <div className='container'>
                 {console.log('TaichungRCIApp : default layout')}
-                <Map constructionsData={data[0]}
+                <Map constructionsData={sliceData(data)}
                     mapParameters={mapParameters}
                     setMapParameters={setMapParameters}
                 />
-                <InfoBlock value={data[0]}
-                          length={data[1]}
+                <InfoButton setShowInfoBlock={setShowInfoBlock}/>
+                <InfoBlock value={sliceData(data)}
+                          length={data.length}
+                          showInfoBlock={showInfoBlock}
+                          option={selectorsOptions}
                           condition={condition}
                           setCondition={setCondition}
-                          option={pickSelectOptions()}
                           mapParameters={mapParameters}
                           setMapParameters={setMapParameters}
                 />

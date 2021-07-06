@@ -4,8 +4,8 @@ const CardMini = (props)=>{
     return(
         <div className='cardMini'>
             <div className='title'>
-                <div className={`title state ${data.state === '是' ? 'working' : 'notWorking'}`}>
-                    {data.state === '是' ? '施工中' : '未施工'}
+                <div className={`title state ${data.workingState === '是' ? 'working' : 'notWorking'}`}>
+                    {data.workingState === '是' ? '施工中' : '未施工'}
                 </div>
                 <div className='date'>
                     <span className='slash'>{data.date.start.year}</span><span className='slash'>{data.date.start.month}</span><span>{data.date.start.day}</span>
@@ -19,7 +19,7 @@ const CardMini = (props)=>{
             </div>
             <div>
                 <div className='item'>地點</div>
-                <div className='data'>{data.distriction + data.address}</div>
+                <div className='data last'>{data.distriction + data.address}</div>
             </div>
         </div>
     );

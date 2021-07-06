@@ -13,7 +13,7 @@ const Card = (props)=>{
         setMapParameters({
             center: data.coordinate,
             polygon: data.coordinate.polygon,
-            zoom: mapParameters.zoom,
+            zoom: 20,
             selectMarker: data,
             closeInfoWindow: false
         });
@@ -31,7 +31,7 @@ const Card = (props)=>{
             <div className='card-meta'>
                 <div className='card-meta-title'>
                     <div className='highlighter bgColor_mintGreen-light' style={{width:data.pipeType.length+'em'}}></div>
-                    <div className={`state ${data.state === '是' ? 'working' : 'notWorking'}`}>{data.state === '是' ? '施工中' : '未施工'}</div>
+                    <div className={`state unselectable ${data.workingState === '是' ? 'working' : 'notWorking'}`}>{data.workingState === '是' ? '施工中' : '未施工'}</div>
                     <div className='pipeType' style={{position:'relative'}}>
                         {data.pipeType}
                     </div>

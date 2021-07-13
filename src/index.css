@@ -339,6 +339,40 @@ template {
   display: none;
 }
 
+@media (max-width: 1024px) {
+  .react-datepicker {
+    font-size: 1em;
+  }
+  .react-datepicker__header {
+    padding-top: 0.8em;
+  }
+  .react-datepicker__month {
+    margin: 0.4em 1em;
+  }
+  .react-datepicker__day-name, .react-datepicker__day {
+    width: 2em;
+    line-height: 2em;
+    margin: 0.275em;
+  }
+  .react-datepicker__current-month {
+    font-size: 1.5em;
+    padding-bottom: 0.5em;
+  }
+  .react-datepicker__navigation {
+    top: 1em;
+    line-height: 1.7em;
+    border: 0.45em solid transparent;
+  }
+  .react-datepicker__navigation--previous {
+    left: 1em;
+  }
+  .react-datepicker__navigation--next {
+    right: 1em;
+  }
+  .react-datepicker__navigation-icon {
+    width: 0;
+  }
+}
 @font-face {
   font-family: "js-openhuninn";
   src: url(./font/jf-openhuninn-1.1.ttf);
@@ -822,7 +856,7 @@ html, body {
 .selectors .react-datepicker__tab-loop .react-datepicker__day--keyboard-selected, .selectors .react-datepicker__tab-loop .react-datepicker__month-text--keyboard-selected, .selectors .react-datepicker__tab-loop .react-datepicker__quarter-text--keyboard-selected, .selectors .react-datepicker__tab-loop .react-datepicker__year-text--keyboard-selected {
   background-color: #3da7a7;
 }
-.selectors .react-datepicker__tab-loop .react-datepicker__day--selected, .selectors .react-datepicker__tab-loop .react-datepicker__day--in-selecting-range, .selectors .react-datepicker__tab-loop .react-datepicker__day--in-range, .selectors .react-datepicker__tab-loop .react-datepicker__month-text--selected, .selectors .react-datepicker__tab-loop .react-datepicker__month-text--in-selecting-range, .selectors .react-datepicker__tab-loop .react-datepicker__month-text--in-range, .selectors .react-datepicker__tab-loop .react-datepicker__quarter-text--selected, .selectors .react-datepicker__tab-loop .react-datepicker__quarter-text--in-selecting-range, .selectors .react-datepicker__tab-loop .react-datepicker__quarter-text--in-range, .selectors .react-datepicker__tab-loop .react-datepicker__year-text--selected, .selectors .react-datepicker__tab-loop .react-datepicker__year-text--in-selecting-range, .selectors .react-datepicker__tab-loop .react-datepicker__year-text--in-range {
+.selectors .react-datepicker__tab-loop .react-datepicker__day--selected, .selectors .react-datepicker__tab-loop .react-datepicker__day--in-range, .selectors .react-datepicker__tab-loop .react-datepicker__month-text--selected, .selectors .react-datepicker__tab-loop .react-datepicker__month-text--in-range, .selectors .react-datepicker__tab-loop .react-datepicker__quarter-text--selected, .selectors .react-datepicker__tab-loop .react-datepicker__quarter-text--in-range, .selectors .react-datepicker__tab-loop .react-datepicker__year-text--selected, .selectors .react-datepicker__tab-loop .react-datepicker__year-text--in-range {
   background-color: #3da7a7;
 }
 .selectors select, .selectors input {
@@ -1121,6 +1155,11 @@ html, body {
   padding-top: 2em;
   color: #505050;
   font-size: 2em;
+}
+.noContent .exclamationMark {
+  font-size: 2em;
+  line-height: 2em;
+  color: #7dcdcd;
 }
 
 .serverError {

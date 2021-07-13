@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 @import './scss/normalize.scss';
 @import './scss/colors/colors.scss';
-// @import './scss/react-datepicker/adjust_React-datepicker.scss';
+@import './scss/react-datepicker/adjust_React-datepicker.scss';
 @font-face {
   font-family: 'js-openhuninn';
   src: url(./font/jf-openhuninn-1.1.ttf);
@@ -589,7 +589,7 @@ html,body{
         .react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected{
             background-color: $mintGreen-dark;
         }
-        .react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range{
+        .react-datepicker__day--selected,  .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-range{
             background-color: $mintGreen-dark;
         }
     }
@@ -923,6 +923,11 @@ html,body{
     padding-top: 2em;
     color: $minor;
     font-size: 2em;
+    .exclamationMark{
+        font-size: 2em;
+        line-height: 2em;
+        color: $mintGreen;
+    }
 }
 
 .serverError{

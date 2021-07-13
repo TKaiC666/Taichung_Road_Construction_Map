@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Card from './Card';
 import CloseButton from './CloseButton';
 import Pagination from './Pagination';
@@ -7,7 +7,7 @@ import Selectors from './Selectors';
 const InfoBlock = (props)=>{
 
     console.log('InfoBlock : start');
-    const {closeInfoBlock, setCloseInfoBlock, handleCloseClick} = props;
+    const {closeInfoBlock, handleCloseClick, isMobile} = props;
     const [pageIndex, setPageIndex] = useState(0);
 
     let cardsNum = useMemo(()=>{
@@ -48,7 +48,8 @@ const InfoBlock = (props)=>{
             <div className='infoBlockContainer'>
             <div className='infoBlock'>
                 <div className='noContent'>
-                    發生錯誤，請稍後在試。
+                    <div className='exclamationMark'><i className="fas fa-exclamation-triangle fa-lg"/></div>
+                    <div>發生錯誤，請稍後在試</div>
                 </div>
             </div>
             </div>
@@ -115,6 +116,7 @@ const InfoBlock = (props)=>{
                         pageBtns={pageBtns}
                         pageIndex={pageIndex}
                         handlePaginationClick={handlePaginationClick}
+                        isMobile={isMobile}
                     />
                     <div id='topAnchor' style={{marginBottom:'2em'}}/>
                     {
@@ -130,6 +132,7 @@ const InfoBlock = (props)=>{
                         pageBtns={pageBtns}
                         pageIndex={pageIndex}
                         handlePaginationClick={handlePaginationClick}
+                        isMobile={isMobile}
                     />
                 </div>
                 </div>

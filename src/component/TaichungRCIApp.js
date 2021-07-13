@@ -9,6 +9,7 @@ const TaichungRCIApp = ()=>{
     const [constructionsData, setConstructionsData] = useState('loading');
     const [condition, setCondition] = useState({workingState:'是', distriction:0, date:{start:null,end:null}, stack:['workingState']});
     const [closeInfoBlock, setCloseInfoBlock] = useState(false);
+    const [isMobile, setIsMobile] = useState(null);
     const [mapParameters, setMapParameters] = useState({
         center:{lat : 24.1512535, lng : 120.6617366},
         polygon: null,
@@ -27,20 +28,30 @@ const TaichungRCIApp = ()=>{
     //     }
     // }
 
-    window.addEventListener('orientationchange',()=>{
-        let afterOrientationChange = ()=>{
-            let baseLength = window.innerHeight;
-            document.documentElement.style.setProperty('--vh', `${baseLength/100}px`);
-            window.removeEventListener('resize', afterOrientationChange);
-        }
-        window.addEventListener('resize', afterOrientationChange);
-    });
+    // window.addEventListener('orientationchange',()=>{
+    //     let afterOrientationChange = ()=>{
+    //         let baseLength = window.innerHeight;
+    //         document.documentElement.style.setProperty('--vh', `${baseLength/100}px`);
+    //         window.removeEventListener('resize', afterOrientationChange);
+    //     }
+    //     window.addEventListener('resize', afterOrientationChange);
+    // });
 
     const changeInfoWindowHeight = ()=>{
         document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
     }
 
-    window.addEventListener('resize', changeInfoWindowHeight);
+    const isWidthUnder = (width)=>{
+        let bool = null;
+        if(window.innerWidth <= width) bool = true;
+        else bool = false;
+        setIsMobile(bool);
+        return bool;
+    }
+
+    const setInfoBlockOnLaunch = (bool)=>{
+        setCloseInfoBlock(bool);
+    }
 
     const convertDate2Num = (date)=>{
         let [year,month,day] = Object.values(date)
@@ -174,7 +185,7 @@ const TaichungRCIApp = ()=>{
             const testAPI_ERROR = 'testing_server-error.json';
 
             console.time('fetch花費時間');
-            fetch(testAPI_LOCAL)
+            fetch(API_URL)
             .then((response) => {
                 console.timeEnd('fetch花費時間');
                 if(response.status === 200){
@@ -201,7 +212,12 @@ const TaichungRCIApp = ()=>{
     },[]);
 
     useEffect(()=>{
+        let isMobileOnLaunch = null;
         changeInfoWindowHeight();
+        isMobileOnLaunch = isWidthUnder(428);
+        window.addEventListener('resize', changeInfoWindowHeight);
+        window.addEventListener('resize', ()=>isWidthUnder(428));
+        setInfoBlockOnLaunch(isMobileOnLaunch);
         fetchData();
     },[fetchData]);
 
@@ -286,97 +302,6 @@ const TaichungRCIApp = ()=>{
         return _options;
     },[condition.stack, constructionsData]);
 
-    const pickOptions = ()=>{
-        let _stack = condition.stack;
-        let _options = {workingState:[], distriction:[], date:{start:{},end:{}}};
-        if(_stack.length === 3){
-            console.log('condition stack = '+_stack.length);
-            _options.date.start = {...filteredData[0].date.start};
-            _options.date.end = {...filteredData[0].date.end};
-            for(let object of filteredData){
-                if(_options.workingState.indexOf(object.workingState) === -1) _options.workingState.push(object.workingState);
-                if(_options.distriction.indexOf(object.distriction) === -1)  _options.distriction.push(object.distriction);
-                if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
-                if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
-            }
-        }
-        else if(_stack.length === 2){
-            console.log('condition stack = 2');
-            let firstCondition = condition.stack[0];
-            let secondCondition = condition.stack[1];
-            let lastCondition = null;
-            for(let key of Object.keys(condition)){
-                if(key !== firstCondition && key !== secondCondition && key !== 'stack'){
-                    lastCondition = key;
-                    break;
-                }
-            }
-            if(firstCondition === 'date'){
-                _options.date.start = {...constructionsData[0].date.start};
-                _options.date.end = {...constructionsData[0].date.end};
-                for(let object of constructionsData){
-                    if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
-                    if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
-                }
-                for(let object of filteredData){
-                    if(_options[secondCondition].indexOf(object[secondCondition]) === -1) _options[secondCondition].push(object[secondCondition]);
-                    if(_options[lastCondition].indexOf(object[lastCondition]) === -1)  _options[lastCondition].push(object[lastCondition]);
-                }
-            }else{
-                for(let object of constructionsData){
-                    if(_options[firstCondition].indexOf(object[firstCondition]) === -1) _options[firstCondition].push(object[firstCondition]);
-                }
-                if(secondCondition === 'date'){
-
-                }else{
-                    let list = constructionsData.map((object)=>(object[secondCondition]));
-                    // let conditionedList = list.filter((object)=>())
-                }
-            }
-        }
-        else if(_stack.length === 1){
-            console.log('condition stack = '+_stack.length);
-            let firstCondition = condition.stack[0];
-            if(firstCondition === 'date'){
-                _options.date.start = {...constructionsData[0].date.start};
-                _options.date.end = {...constructionsData[0].date.end};
-                for(let object of constructionsData){
-                    if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
-                    if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
-                }
-                for(let object of filteredData){
-                    if(_options.workingState.indexOf(object.workingState) === -1) _options.workingState.push(object.workingState);
-                    if(_options.distriction.indexOf(object.distriction) === -1)  _options.distriction.push(object.distriction);
-                }
-            }else{
-                let anotherCondition = firstCondition === 'distriction' ? 'workingState' :　'distriction';
-                console.log(firstCondition, anotherCondition);
-                for(let object of constructionsData){
-                    if(_options[firstCondition].indexOf(object[firstCondition]) === -1) _options[firstCondition].push(object[firstCondition]);
-                }
-                _options.date.start = {...filteredData[0].date.start};
-                _options.date.end = {...filteredData[0].date.end};
-                for(let object of filteredData){
-                    if(_options[anotherCondition].indexOf(object[anotherCondition]) === -1)  _options[anotherCondition].push(object[anotherCondition]);
-                    if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
-                    if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
-                }
-            }
-        }else if(_stack.length >= 0){
-            console.log('condition stack = 0');
-            _options.date.start = {...constructionsData[0].date.start};
-            _options.date.end = {...constructionsData[0].date.end};
-            for(let object of constructionsData){
-                if(_options.workingState.indexOf(object.workingState) === -1) _options.workingState.push(object.workingState);
-                if(_options.distriction.indexOf(object.distriction) === -1)  _options.distriction.push(object.distriction);
-                if(convertDate2Num(object.date.start) <= convertDate2Num(_options.date.start)) _options.date.start = {...object.date.start};
-                if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
-            }
-        }
-        console.log(_options);
-        return _options;
-    }
-
     const handleCloseClick = ()=>{
         let _closeInfoBlock = closeInfoBlock;
         if(_closeInfoBlock !== null){
@@ -426,6 +351,7 @@ const TaichungRCIApp = ()=>{
                     mapParameters={mapParameters}
                     closeInfoBlock={closeInfoBlock}
                     setMapParameters={setMapParameters}
+                    isMobile={isMobile}
                 />
                 <InfoButton closeInfoBlock={closeInfoBlock}
                             handleCloseClick={handleCloseClick}
@@ -436,9 +362,9 @@ const TaichungRCIApp = ()=>{
                           condition={condition}
                           mapParameters={mapParameters}
                           closeInfoBlock={closeInfoBlock}
+                          isMobile={isMobile}
                           handleCloseClick={handleCloseClick}
                           setCondition={setCondition}
-                          setCloseInfoBlock={setCloseInfoBlock}
                           setMapParameters={setMapParameters}
                 />
             </div>

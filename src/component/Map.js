@@ -4,7 +4,7 @@ import CardMini from './CardMini';
 
 const Map = (props)=>{
     const [gridSize, setGridSize] = useState(60);
-    const {constructionsData, mapParameters, closeInfoBlock, setMapParameters} = props;
+    const {constructionsData, mapParameters, closeInfoBlock, setMapParameters, isMobile} = props;
     const mapRef = useRef(null);
     const APIKey = 'AIzaSyAD3EMZ4E3XEei4WDxlpEaUpiPeOCm5cIQ';
     let isClusterWork = (constructionsData !== null) && (constructionsData.length !== 0) ? true : false;
@@ -101,7 +101,7 @@ const Map = (props)=>{
     return(
         <div className='mapContainer'>
         {
-            (constructionsData === null || (closeInfoBlock === false && window.innerWidth <= 428)) &&
+            (constructionsData === null || (closeInfoBlock === false && isMobile)) &&
             <div className='mapCover'/>
         }
         <LoadScript googleMapsApiKey={APIKey}>

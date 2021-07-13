@@ -1,7 +1,7 @@
 const Pagination = (props)=>{
     //必須變數from Card list，依賴Card list
     //不能用[]
-    const {margin ,pageBtns, pageIndex} = props;
+    const {margin ,pageBtns, pageIndex, isMobile} = props;
     //PageButtons有自己的handleClick，變數名稱有衝突
     //另外用一個變數儲存從CardList傳來的handleClick，而不解構賦值
     const handleBtnClick = props.handlePaginationClick;
@@ -13,7 +13,7 @@ const Pagination = (props)=>{
     }
 
     if(pageBtns.length === 1) return null;
-    if(window.innerWidth <= 428){
+    if(isMobile){
         let pageBtnsArr = Array.from({length:pageBtns.length}, (_,index)=>index);
         let selectValue = null;
         returnElement=

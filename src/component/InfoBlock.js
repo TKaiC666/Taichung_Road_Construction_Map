@@ -1,22 +1,22 @@
 import { useMemo, useState } from 'react';
 import Card from './Card';
+import CloseButton from './CloseButton';
 import Pagination from './Pagination';
 import Selectors from './Selectors';
 
 const InfoBlock = (props)=>{
 
     console.log('InfoBlock : start');
-
-    //目前所在頁數
+    const {closeInfoBlock, setCloseInfoBlock, handleCloseClick} = props;
     const [pageIndex, setPageIndex] = useState(0);
-    //目前頁數內的卡片數量
+
     let cardsNum = useMemo(()=>{
         console.log('InfoBlock : start useMemo()')
             let arr = [];
             let length = 0;
 
-            if(props.value===null) return;
-            else if(props.value.length>1) length =  props.value[pageIndex].length;
+            if(props.value === null) return;
+            else if(props.value.length > 1) length =  props.value[pageIndex].length;
             else if(props.value.length === 1) length =  props.value[0].length;
             else length = 0;
 
@@ -24,9 +24,10 @@ const InfoBlock = (props)=>{
             return(arr);
     },[props.value, pageIndex]);
 
-    const handleClick = (x)=>{
-        if(x > props.value.length-1 || x < 0) return;
-        document.getElementById('topAnchor').scrollIntoView();
+    const handlePaginationClick = (x)=>{
+        console.log(x);
+        if(x > (props.value.length - 1) || x < 0) return;
+        document.getElementById('topAnchor').scrollIntoView(false);
         setPageIndex(x);
     }
 
@@ -34,33 +35,29 @@ const InfoBlock = (props)=>{
 
     if(props.value === 'loading'){
         return(
-            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
-            <div className='infoBlock'>
-                <div className='cardListContainer'>
-                <div className='cardsList'>
-                </div>
+            <div className={`infoBlockContainer`}>
+            <div className='infoBlock' style={{paddingTop:'0', backgroundColor:'#ececec'}}>
+                <div className='loading'>
+                    <i className="fas fa-circle-notch fa-lg"/>
                 </div>
             </div>
             </div>
         );
     }else if(props.value === null){
         return(
-            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
+            <div className='infoBlockContainer'>
             <div className='infoBlock'>
-                <div className='cardListContainer'>
-                <div className='cardsList'>
-                    <div className='noContent'>
-                        {'伺服器回傳錯誤，\n請稍後在試。'}
-                    </div>
-                </div>
+                <div className='noContent'>
+                    發生錯誤，請稍後在試。
                 </div>
             </div>
             </div>
         );
     }else if(props.value.length === 0){
         return(
-            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
+            <div className='infoBlockContainer' style={{display:closeInfoBlock ? 'none' : 'block'}}>
             <div className='infoBlock'>
+                <CloseButton handleCloseClick={handleCloseClick}/>
                 <div className='toolbarContainer'>
                     <Selectors
                         options={props.option}
@@ -86,8 +83,9 @@ const InfoBlock = (props)=>{
         let pageBtns = Array.from({length: props.value.length},(_,index)=>index);
         console.log('InfoBlock : render start');
         return(
-            <div className={`infoBlockContainer ${(window.innerWidth <= 428) && 'unvisible'}`}>
-            <div className='infoBlock'>
+            <div className='infoBlockContainer' style={{display:closeInfoBlock ? 'none' : 'block'}}>
+            <div className={`infoBlock ${props.closeInfoBlock ? 'unvisible' : 'visible'}`}>
+                <CloseButton handleCloseClick={handleCloseClick}/>
                 <div className='toolbarContainer'>
                     <Selectors
                         options={props.option}
@@ -97,25 +95,42 @@ const InfoBlock = (props)=>{
                         setPageIndex={setPageIndex}
                         setMapParameters={props.setMapParameters}
                     />
-                    <Pagination
+                    {/* {window.innerWidth > 428 && 
+                        <Pagination
                         // margin={'marginBottom-2'}
                         pageBtns={pageBtns}
                         pageIndex={pageIndex}
-                        handleClick={handleClick}
-                    />
+                        handlePaginationClick={handlePaginationClick}
+                        />
+                    } */}
+                    {/* <Pagination
+                        pageBtns={pageBtns}
+                        pageIndex={pageIndex}
+                        handlePaginationClick={handlePaginationClick}
+                    /> */}
                 </div>
                 <div className='cardsListContainer'>
                 <div className='cardsList'>
+                    <Pagination
+                        pageBtns={pageBtns}
+                        pageIndex={pageIndex}
+                        handlePaginationClick={handlePaginationClick}
+                    />
                     <div id='topAnchor' style={{marginBottom:'2em'}}/>
-                {
-                    cardsNum.map((i)=>(
-                        <Card key={'card'+(pageIndex*10+i+1)}
-                            value={props.value[pageIndex][i]}
-                            mapParameters={props.mapParameters}
-                            setMapParameters={props.setMapParameters}
-                        />
-                    ))
-                }
+                    {
+                        cardsNum.map((i)=>(
+                            <Card key={'card'+(pageIndex*10+i+1)}
+                                value={props.value[pageIndex][i]}
+                                mapParameters={props.mapParameters}
+                                setMapParameters={props.setMapParameters}
+                            />
+                        ))
+                    }
+                    <Pagination
+                        pageBtns={pageBtns}
+                        pageIndex={pageIndex}
+                        handlePaginationClick={handlePaginationClick}
+                    />
                 </div>
                 </div>
             </div>

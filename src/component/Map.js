@@ -1,13 +1,11 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
 import {GoogleMap, LoadScript, InfoWindow, MarkerClusterer, Marker, Polygon} from '@react-google-maps/api';
 import CardMini from './CardMini';
-import m1 from '../img/map/markerclusterer/m1.png';
 
 const Map = (props)=>{
     const [gridSize, setGridSize] = useState(60);
-    const {constructionsData, mapParameters, setMapParameters} = props;
+    const {constructionsData, mapParameters, closeInfoBlock, setMapParameters} = props;
     const mapRef = useRef(null);
-    const dataRef = useRef(null);
     const APIKey = 'AIzaSyAD3EMZ4E3XEei4WDxlpEaUpiPeOCm5cIQ';
     let isClusterWork = (constructionsData !== null) && (constructionsData.length !== 0) ? true : false;
 
@@ -17,9 +15,9 @@ const Map = (props)=>{
     },[]);
 
     const changeGridSize = ()=>{
-        if(!mapRef.current || mapRef.current.zoom <= 17) return;
-        let size = 60;
-        if(mapRef.current.zoom > 18) size = 1;
+        let size = null;
+        if(!mapRef.current || mapRef.current.zoom <= 18) size = 60;
+        else if(mapRef.current.zoom > 18) size = 1;
         setGridSize(size);
     }
 
@@ -64,7 +62,6 @@ const Map = (props)=>{
         const renderMarker = (cluster)=>{
             let markersNum = (constructionsData.length-1)*10 + constructionsData[(constructionsData.length-1)].length;
             let markers = Array.from({length : markersNum},(_,index)=>index);
-            
             return(
                 markers.map((i)=>(
                     (constructionsData[Math.floor(i/10)][i%10].coordinate.lat !== 0 && constructionsData[Math.floor(i/10)][i%10].coordinate.lng !== 0) &&
@@ -75,11 +72,11 @@ const Map = (props)=>{
                                 noClustererRedraw={true}
                                 icon={constructionsData[Math.floor(i/10)][i%10].workingState === '是' ? 
                                 {
-                                    url:'/img/map/marker/cone.png',
+                                    url: process.env.PUBLIC_URL+'/img/marker/cone.png',
                                     scaledSize : {width:37, height:37}
                                 } : 
                                 {
-                                    url:'/img/map/marker/cone_gray.png',
+                                    url:process.env.PUBLIC_URL+'/img/marker/cone_gray.png',
                                     scaledSize : {width:37, height:37}
                                 }}
                         />
@@ -103,6 +100,10 @@ const Map = (props)=>{
 
     return(
         <div className='mapContainer'>
+        {
+            (constructionsData === null || (closeInfoBlock === false && window.innerWidth <= 428)) &&
+            <div className='mapCover'/>
+        }
         <LoadScript googleMapsApiKey={APIKey}>
             <GoogleMap
                 mapContainerStyle={{
@@ -111,11 +112,12 @@ const Map = (props)=>{
                 }}
                 zoom={mapParameters.zoom}
                 center={mapParameters.center}
+                // center={{lat : mapParameters.center.lat, lng : mapParameters.center.lng - (window.innerWidth * 0.00000015)}}
                 options={{ 
                     styles : mapStyle,
                     minZoom : 11,
                     maxZoom : 20,
-                    disableDefaultUI : true
+                    disableDefaultUI : true,
                 }}
                 onLoad={(map)=>{handleMapOnLoad(map)}}
                 onZoomChanged={changeGridSize}
@@ -268,7 +270,7 @@ const mapStyle = [
         "elementType": "all",
         "stylers": [
             {
-                "color": "#5ecde9"
+                "color": "#83cfe2"
             }
         ]
     }
@@ -290,31 +292,33 @@ const polygonOptions = {
 const clustersOptions = {
     styles: [
         {
-            height: 53,
-            width: 53,
-            url: "/img/map/markerclusterer/m1.png"
+            textSize : 14,
+            height: 66,
+            width: 66,
+            url: process.env.PUBLIC_URL+"img/markerclusterer/m1.png"
         },
         {
-            height: 56,
-            url: "/img/map/markerclusterer/m2.png",
-            width: 56
+            textSize : 14,
+            height: 66,
+            width: 66,
+            url: process.env.PUBLIC_URL+"img/markerclusterer/m2.png",
         },
         {
             height: 66,
-            url: "/img/map/markerclusterer/m3.png",
-            width: 66
+            width: 66,
+            url: process.env.PUBLIC_URL+"img/markerclusterer/m3.png",
         },
         {
-            height: 78,
-            url: "/img/map/markerclusterer/m4.png",
-            width: 78
+            height: 66,
+            width: 66,
+            url: process.env.PUBLIC_URL+"img/markerclusterer/m4.png",
         },
         {
-            height: 90,
-            url: "/img/map/markerclusterer/m5.png",
-            width: 90
-        }]
-    // imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m', // so you must have m1.png, m2.png, m3.png, m4.png, m5.png and m6.png in that folder
+            height: 66,
+            width: 66,
+            url: process.env.PUBLIC_URL+"img/markerclusterer/m5.png",
+        }
+    ]
 }
 
 export default Map;

@@ -14,6 +14,10 @@ const CardMini = (props)=>{
                 </div>
             </div>
             <div>
+                <div className='item'>案件類別</div>
+                <div className='data'>{data.constructionType}</div>
+            </div>
+            <div>
                 <div className='item'>工程名稱</div>
                 <div className='data'>{data.title}</div>
             </div>

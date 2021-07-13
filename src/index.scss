@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 @import './scss/normalize.scss';
 @import './scss/colors/colors.scss';
+// @import './scss/react-datepicker/adjust_React-datepicker.scss';
 @font-face {
   font-family: 'js-openhuninn';
   src: url(./font/jf-openhuninn-1.1.ttf);
@@ -8,6 +9,12 @@
 
 $infoBlock-padding : 2em;
 $infoBlock-gap : 20px;
+
+
+//for mobile 100vh height
+@function vh($quantity) {
+    @return calc(var(--vh, 1vh) * #{$quantity});
+}
 
 html,body{
     margin: 0;
@@ -19,60 +26,85 @@ html,body{
     font-weight: 400;
 }
 
-@media (min-width: 1025px) {
-    html,body{
-        font-size: 16px;
-    }
-    .toolbarContainer{
-        width: 450px;
-    }
-    .cardsList{
-        width: 460px;
-    }
-    .infoBlock{
-        width: calc(450px + #{$infoBlock-padding} * 2);
-    }
-    .cardMini{
-        width: 350px;
-        font-size: 18px;
-        i{
-            padding: 0 0.75em;
-        }
-    }
-}
-@media (max-width: 1024px) {
+@media only screen and (max-width: 428px) {
+
+    $padding : 3em;
     html,body{
         font-size: 12px;
     }
-    .toolbarContainer{
-        width: 300px;
+    .infoBlockContainer{
+        margin-top: $infoBlock-gap;
     }
-    .cardsList{
-        width: 310px;
+    .closeButtonContainer{
+        font-size: 20px;
+        margin: 5px 5px;
+        // display: none;
     }
     .infoBlock{
-        width: calc(300px + #{$infoBlock-padding} * 2);
+        width: 100vw;
+        padding-top: $padding;
     }
-    .cardMini{
-        width: 280px;
-        font-size: 18px;
-        i{
-            padding: 0 0.75em;
+    .toolbarContainer{
+        width: calc(100% - #{$padding} * 2);
+        padding: 0 $padding;
+    }
+    .cardsList{
+        @supports (-webkit-touch-callout: none) {
+            /* CSS specific to iOS devices */ 
+            width: calc(100% - #{$infoBlock-padding} * 2);
+            padding: 0 $infoBlock-padding $infoBlock-padding;
+        }
+        @supports not (-webkit-touch-callout: none) {
+            /* CSS for other than iOS devices */ 
+            width: calc(100% - #{$infoBlock-padding} * 2 + 10px);
+            padding: 0 calc(#{$infoBlock-padding} - 10px) $infoBlock-padding $infoBlock-padding;
         }
     }
-}
-@media (max-width: 768px) {
-    .toolbarContainer{
-        width: inherit;
+    .selectors{
+        font-size: 16px !important;
+        select{
+            padding: 7.5px 10px !important;
+        }
+        .dateSelect{
+            padding : 7.5px 10px !important;
+        }
     }
-    .cardsList{
-        width: 260px;
+    .pagination{
+        display: flex;
+        gap: 10px;
+        .pageArrow{
+            flex:1;
+            font-size: 20px;
+            width: 60px !important;
+            line-height: 50px;
+        }
+        .pageElement{
+            flex: 1;
+            position: relative;
+            .selectArrow{
+                top: 0.25em;
+                right: 1.5em;
+            }
+            select{
+                font-size: 16px;
+                width: calc(100% - 22px);
+                line-height: 38px;
+                padding: 5px 10px;
+                border:1px solid $minor;
+                border-radius: 24px;
+                background-color: $white;
+                text-align-last: center;
+            }
+            @supports (-webkit-touch-callout: none) {
+                select{
+                    text-align: -webkit-center;
+                }
+            }
+        }
+        select, option{
+            -webkit-appearance: none;
+        }
     }
-    .infoBlock{
-        width: calc(250px + #{$infoBlock-padding} * 2);
-    }
-}
-@media (max-width: 428px) {
     .cardMini{
         width: inherit;
         font-size: 14px;
@@ -81,6 +113,189 @@ html,body{
             i{
                 padding: 0 10px;
             }
+        }
+    }
+}
+@media only screen and (min-width: 429px) {
+
+    $padding : 2.5em;
+    html,body{
+        font-size: 12px;
+    }
+    .infoBlockContainer{
+        margin: $infoBlock-gap;
+    }
+    .closeButtonContainer{
+        font-size: 1.2em;
+        margin: 0.5em 0.5em;
+    }
+    .infoBlock{
+        width: calc(280px + #{$infoBlock-padding} * 2);
+        padding-top: $padding;
+    }
+    .toolbarContainer{
+        width: calc(100% - #{$padding} * 2);
+        padding: 0 $padding;
+    }
+    .cardsList{
+        @supports (-webkit-touch-callout: none) {
+            /* CSS specific to iOS devices */ 
+            width: calc(100% - #{$infoBlock-padding} * 2);
+            padding: 0 $infoBlock-padding $infoBlock-padding;
+        }
+        @supports not (-webkit-touch-callout: none) {
+            /* CSS for other than iOS devices */ 
+            width: calc(100% - #{$infoBlock-padding} * 2 + 10px);
+            padding: 0 calc(#{$infoBlock-padding} - 10px) $infoBlock-padding $infoBlock-padding;
+        }
+        // width: 290px;
+    }
+    .pagination{
+        .pageElement{
+            line-height: 1.5em;
+            width: 1.5em;
+            padding: 0.5em;
+            border-radius: 1.5em;
+            margin-right: calc((100% - 2.5em * 9) / 8);
+        }
+    }
+    // .pagination{
+    //     display: flex;
+    //     gap: 10px;
+    //     .pageArrow{
+    //         flex:1;
+    //         font-size: 20px;
+    //         width: 60px !important;
+    //         line-height: 50px;
+    //     }
+    //     .pageElement{
+    //         flex: 1;
+    //         position: relative;
+    //         .selectArrow{
+    //             top: 0.25em;
+    //             right: 1.5em;
+    //         }
+    //         select{
+    //             font-size: 16px;
+    //             width: calc(100% - 22px);
+    //             line-height: 38px;
+    //             padding: 5px 10px;
+    //             border:1px solid $minor;
+    //             border-radius: 24px;
+    //             background-color: $white;
+    //             text-align-last: center;
+    //         }
+    //         @supports (-webkit-touch-callout: none) {
+    //             select{
+    //                 text-align: -webkit-center;
+    //             }
+    //         }
+    //     }
+    //     select, option{
+    //         -webkit-appearance: none;
+    //     }
+    // }
+    .cardMini{
+        width: 280px;
+        font-size: 18px;
+        i{
+            padding: 0 0.75em;
+        }
+    }
+    .card{
+        &-meta{
+            &-title{
+                .state{
+                    padding: 0px;
+                }
+            }
+        }
+    }
+}
+@media only screen and (min-width: 769px) {
+    $padding : 2.5em;
+    .infoBlockContainer{
+        margin: $infoBlock-gap;
+    }
+    .infoBlock{
+        width: calc(300px + #{$infoBlock-padding} * 2);
+        padding-top: $padding;
+    }
+    .toolbarContainer{
+        width: calc(100% - #{$padding} * 2);
+        padding: 0 $padding;
+    }
+    .cardsList{
+        // width: 310px;
+    }
+    .pagination{
+        .pageElement{
+        line-height: 1.75em;
+        width: 1.75em;
+        padding: 0.5em;
+        border-radius: 1.5em;
+        margin-right: calc((100% - 2.75em * 9) / 8);
+        }
+    }
+    .cardMini{
+        width: 280px;
+        font-size: 18px;
+        i{
+            padding: 0 0.75em;
+        }
+    }
+    .card{
+        &-meta{
+            &-title{
+                .state{
+                    padding: 0px 5px;
+                }
+            }
+        }
+    }
+}
+@media only screen and (min-width: 1025px) {
+    $padding_1025 : 2.5em;
+    html,body{
+        font-size: 16px;
+    }
+    .infoBlockContainer{
+        margin: $infoBlock-gap;
+    }
+    .infoBlock{
+        width: calc(450px + #{$infoBlock-padding} * 2);
+        padding-top: $padding_1025;
+    }
+    .toolbarContainer{
+        width: calc(100% - #{$padding_1025} * 2);
+        padding: 0 $padding_1025;
+    }
+    .cardsList{
+        // width: 460px;
+    }
+    // .pagination{
+    //     .pageElement{
+    //     line-height: 1.75em;
+    //     width: 1.75em;
+    //     padding: 0.5em;
+    //     border-radius: 1.5em;
+    //     margin-right: calc((100% - 2.75em * 9) / 8);
+    //     }
+    // }
+    .card{
+        &-meta{
+            &-title{
+                .state{
+                    padding: 0px 5px;
+                }
+            }
+        }
+    }
+    .cardMini{
+        width: 350px;
+        font-size: 18px;
+        i{
+            padding: 0 0.75em;
         }
     }
 }
@@ -114,6 +329,30 @@ html,body{
     user-select: none;
 }
 
+.loading{
+    margin: 100px auto;
+    width: 120px;
+    line-height: 120px;
+    text-align: center;
+    font-size: 60px;
+    color: $mintGreen-dark;
+    i{
+        animation-name: spin;
+        animation-duration: 1200ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out; 
+    }
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
 .mapContainer{
     width: 100%;
     height: 100%;
@@ -136,23 +375,64 @@ html,body{
     }
 }
 
-.infoButtonContainer{
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    margin: 20px;
+.mapCover{
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background-color: $black;
+    opacity: 0.5;
 }
 
-.infoButton{
+.infoButtonContainer{
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 20px;
+    .button{
+        box-shadow: 0px 0px 10px -1px $boxShadow-dark;
+    }
+}
+
+.closeButtonContainer{
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
+}
+
+.closeButton{
+    width: 1.5em;
+    line-height: 1.5em;
+    text-align: center;
+    &:hover{
+        cursor: pointer;
+        color: $minor;
+    }
+}
+
+.hideButton{
+    margin-right: -70px;
+    transition: all 0.5s;
+}
+
+.button{
     width: 65px;
     line-height: 65px;
     border-radius: 50px;
+    transition: all 0.2s;
+    color: $mintGreen;
     background-color: $white;
     font-size: 20px;
     text-align: center;
     vertical-align: middle;
     box-shadow: 0px 0px 10px 1px $boxShadow;
-    color: $orange;
+    &:hover{
+        cursor: pointer;
+        transition: all 0.2s;
+        color: $white;
+        background-color: $mintGreen;
+    }
 }
 
 .visible{
@@ -163,37 +443,50 @@ html,body{
     visibility: hidden;
 }
 
-.toolbarContainer{
-    // width: 450px;
-    padding: 0 $infoBlock-padding;
+.selectArrow{
+    font-size: 12px;
+    position: absolute;
+    height: 12px;
+    top: 4px;
+    bottom: 0;
+    right: 8px;
+    margin: auto;
 }
 
 .pagination{
-    margin-top: 1.5em;
+    margin-top: 1.2em;
     text-align: center;
 
     .pageElement{
-        font-size: 16px;
         display: inline-block;
-        text-decoration: none;
         text-align: center;
-        line-height: 1.75em;
-        width: 1.75em;
-        padding: 0.5em;
         color: $black;
-        margin-right: 0.3em;
-        border-radius: 1.5em;
         &:last-child{
             margin-right: 0;
         }
     }
+    
+    //backup
+    // .pageElement{
+    //     display: inline-block;
+    //     text-align: center;
+    //     line-height: 1.75em;
+    //     width: 1.75em;
+    //     padding: 0.5em;
+    //     border-radius: 1.5em;
+    //     margin-right: calc((100% - 2.75em * 9) / 8);
+    //     color: $black;
+    //     &:last-child{
+    //         margin-right: 0;
+    //     }
+    // }
 
     .pageArrow{
         border-radius: 0.5em;
         &:hover{
             cursor: pointer;
             color: $white;
-            background-color: $mintGreen;
+            background-color: $mintGreen-dark;
             transition: all 0.2s;
         }
     }
@@ -213,36 +506,108 @@ html,body{
 }
 
 .selectors{
-    select{
-        line-height: normal;
-        padding: 5px 10px;
-        border-radius: 10px;
-        margin-right: 10px;
-        // -webkit-appearance: none;
-        // -moz-appearance: none;
-        option:hover{
-            background-color: $mintGreen-light;
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1em;
+    font-size: 1em;
+    // justify-content: space-between;
+    .selectContainer{
+        flex : 1 1 auto;
+        position: relative;
+        .selectArrow{
+            // color: $white;
         }
-        &::-webkit-scrollbar{
-            &-track{
-                background-color: $white;
+        select{
+            line-height: 1.5em;
+            width: 100%;
+            padding: 5px calc(10px + 0.7em) 5px 10px;
+            text-align-last: center;
+            text-align: -webkit-center;
+            option:hover{
+                background-color: $mintGreen;
+            }
+            &::-webkit-scrollbar{
+                &-track{
+                    background-color: $white;
+                }
+            }
+            // &:focus{
+            //     background-color: $mintGreen-light;
+            //     option{
+            //         background-color: $white;
+            //     }
+            // }
+            &[data-chosen='0']{
+                background-color:$white;
+            }
+            &:not([data-chosen='0']){
+                background-color:$mintGreen-dark;
+                color:white;
+                option{
+                    background-color:$white;
+                    color:$black;
+                }
             }
         }
     }
-    input{
+
+    .dateSelectContainer{
+        flex : 1 1 auto;
+
+        .react-datepicker__close-icon{
+            &::after{
+                background-color: $white;
+                color: $black;
+            }
+        }
+    }
+
+    .dateSelect{
+        // margin-bottom: 1em;
+        width: calc(100% - 20px - 2px);
         height: 1.5em;
         padding: 5px 10px;
-        border-radius: 10px;
         border: 1px solid $minor;
+        &::placeholder{
+            text-align: center;
+        }
+        &:not([value='']){
+            background-color:$mintGreen-dark;
+            color:white;
+            option{
+                background-color:$white;
+                color:$black;
+            }
+        }
     }
+
+    .react-datepicker__tab-loop{
+        position: absolute !important;
+        .react-datepicker__day--in-selecting-range, .react-datepicker__month-text--in-selecting-range, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__year-text--in-selecting-range{
+            background-color: $mintGreen;
+        }
+        .react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected{
+            background-color: $mintGreen-dark;
+        }
+        .react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range{
+            background-color: $mintGreen-dark;
+        }
+    }
+
     select, input{
+        // margin-bottom: 1em;
         outline: none;
+        border-radius: 1em;
         &:hover{
             cursor: pointer;
+            border-color:  $mintGreen-dark;
         }
         &:focus{
             border-color:  $mintGreen-dark;
         }
+    }
+    select, option, input{
+        -webkit-appearance: none;
     }
 }
 
@@ -253,12 +618,8 @@ html,body{
 
 .cardsList{
     position: absolute;
-    // width: 460px;
-    height: calc(100% - 4px - 2em - #{$infoBlock-gap});
-    margin-top: 1.5em;
-    padding: 0 calc(#{$infoBlock-padding} - 10px) $infoBlock-padding $infoBlock-padding;
+    height: calc(100% - 5px - #{$infoBlock-gap});
     overflow-y: scroll;
-    border-top: 1px solid $line;
 }
 
 .horiLine{
@@ -285,8 +646,6 @@ html,body{
 
 .infoBlockContainer{
     position: fixed;
-    top: $infoBlock-gap;
-    left: $infoBlock-gap;
 }
 
 .infoBlock {
@@ -294,14 +653,19 @@ html,body{
     //但是firefox是正常的。
     //0705註記 : 我想是scrollbar有沒有算進去的關係，chrome和edge會包含scrollbar，firefox則不會。
     // width: calc(450px + #{$padding-infoBlock} * 2);
-    height: calc(100vh - 3em - #{$infoBlock-gap});
+    // height: calc(vh(100) - #{$infoBlock-gap} * 2 - #{$infoBlock-padding});
+    height: calc(#{vh(100)} - #{$infoBlock-gap} * 2 - #{$infoBlock-padding});
     display: flex;
     flex-flow: column;
-    padding-top: $infoBlock-padding;
     background-color: $bg;
-    border-radius: 20px;
+    border-radius: 1em;
     box-shadow: 0px 0px 10px 5px $boxShadow;
     overflow: hidden;
+}
+
+.toolbarContainer{
+    padding-bottom: 1.5em;
+    border-bottom: 1px solid $line;
 }
 
 .card {
@@ -325,10 +689,10 @@ html,body{
 
     .item{
         color: $minor;
-        font-size: 0.5em;
+        font-size: 0.7em;
         font-weight: 300;
         letter-spacing: 1px;
-        margin-bottom: 0.5em;
+        margin-bottom: 0.25em;
     }
 
     .highlighter{
@@ -349,7 +713,6 @@ html,body{
                 width: 62px;
                 vertical-align: middle;
                 margin-right:1.5em;
-                padding: 0px 5px;
                 font-size: 0.8em;
                 letter-spacing: 2px;
                 //---把最後一個字的letter-space空間去除
@@ -406,6 +769,7 @@ html,body{
         }
 
         .buttons{
+            font-size: 16px;
             float: right;
             *{
                 font-size: 1.15em;
@@ -476,7 +840,7 @@ html,body{
             }
             
             .phone{
-                font-size: 0.5em;
+                font-size: 0.7em;
                 margin-top: 3px;
             }
         }
@@ -553,9 +917,10 @@ html,body{
 }
 
 .noContent{
-    text-align: left;
-    letter-spacing: 3px;
-    padding: 2em;
+    text-align: center;
+    // letter-spacing: 3px;
+    // padding: 2em;
+    padding-top: 2em;
     color: $minor;
     font-size: 2em;
 }
@@ -567,18 +932,18 @@ html,body{
     font-size: 2em;
 }
 
-.loading{
-    height: 250px;
+// .loading{
+//     height: 250px;
 
-    div{
-        position: relative;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-20%) translateY(-50%);
-        font-size: 36px;
-        color: rgba(0, 0, 0, 0.31);
-    }
-}
+//     div{
+//         position: relative;
+//         top: 50%;
+//         left: 50%;
+//         transform: translateX(-20%) translateY(-50%);
+//         font-size: 36px;
+//         color: rgba(0, 0, 0, 0.31);
+//     }
+// }
 
 .hide{
     visibility: hidden;

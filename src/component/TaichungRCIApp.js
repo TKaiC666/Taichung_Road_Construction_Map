@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import CloseButton from './CloseButton';
 import Map from './Map'
-import InfoButton from './InfoButton';
 import InfoBlock from './InfoBlock';
+import InfoButton from './InfoButton';
 
 const TaichungRCIApp = ()=>{
     console.log('TaichungRCIApp : start');
     const [constructionsData, setConstructionsData] = useState('loading');
     const [condition, setCondition] = useState({workingState:'是', distriction:0, date:{start:null,end:null}, stack:['workingState']});
-    const [showInfoBlock, setShowInfoBlock] = useState(null);
+    const [closeInfoBlock, setCloseInfoBlock] = useState(false);
     const [mapParameters, setMapParameters] = useState({
         center:{lat : 24.1512535, lng : 120.6617366},
         polygon: null,
@@ -25,6 +26,21 @@ const TaichungRCIApp = ()=>{
     //         console.log('geolocation is not available');
     //     }
     // }
+
+    window.addEventListener('orientationchange',()=>{
+        let afterOrientationChange = ()=>{
+            let baseLength = window.innerHeight;
+            document.documentElement.style.setProperty('--vh', `${baseLength/100}px`);
+            window.removeEventListener('resize', afterOrientationChange);
+        }
+        window.addEventListener('resize', afterOrientationChange);
+    });
+
+    const changeInfoWindowHeight = ()=>{
+        document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
+    }
+
+    window.addEventListener('resize', changeInfoWindowHeight);
 
     const convertDate2Num = (date)=>{
         let [year,month,day] = Object.values(date)
@@ -152,24 +168,23 @@ const TaichungRCIApp = ()=>{
         }
 
         const fetchingData = ()=>{
-            let url = 'https://datacenter.taichung.gov.tw/swagger/OpenData/863064b3-7678-437e-9161-8dcda3d95ab7';
+            const API_URL = 'https://datacenter.taichung.gov.tw/swagger/OpenData/863064b3-7678-437e-9161-8dcda3d95ab7';
             //local testing
-            let local = 'testing_Data.json';
-            let error = 'testing_server-error.json';
+            const testAPI_LOCAL = 'testing_Data.json';
+            const testAPI_ERROR = 'testing_server-error.json';
 
-            fetch(local)
+            console.time('fetch花費時間');
+            fetch(testAPI_LOCAL)
             .then((response) => {
+                console.timeEnd('fetch花費時間');
                 if(response.status === 200){
                     return(response.text());
                 }
-                throw new Error('Network response was not ok.');
+                throw new Error('response was not ok.');
             })
             .then((data)=>{
-                //等API資料庫又500時，在做response.status和response.ok的測試
-                //這個辨識方法很白癡但很直接，500 internal server error會回傳使用html tag語法的字串
-                //所以只要看第一個字是否為<，就能確定是否為500。
-                if(data[0] === '<'){
-                    console.error('fetch error : API Internal Server Error');
+                if(data[0] !== '['){
+                    console.error('fetch error : \n',data);
                     setConstructionsData(null);
                 }else{
                     let newData = handleData(JSON.parse(data));
@@ -186,6 +201,7 @@ const TaichungRCIApp = ()=>{
     },[]);
 
     useEffect(()=>{
+        changeInfoWindowHeight();
         fetchData();
     },[fetchData]);
 
@@ -254,7 +270,7 @@ const TaichungRCIApp = ()=>{
     const selectorsOptions = useMemo(()=>{
         let _stack = condition.stack;
         let _options = {workingState:[], distriction:[], date:{start:{},end:{}}};
-        if(_stack.length >= 0 && constructionsData !== 'loading'){
+        if(_stack.length >= 0 && constructionsData !== 'loading' && constructionsData !== null){
             console.log('condition stack '+_stack.length);
             console.log(constructionsData);
             _options.date.start = {...constructionsData[0].date.start};
@@ -361,6 +377,15 @@ const TaichungRCIApp = ()=>{
         return _options;
     }
 
+    const handleCloseClick = ()=>{
+        let _closeInfoBlock = closeInfoBlock;
+        if(_closeInfoBlock !== null){
+            _closeInfoBlock = !_closeInfoBlock;
+        }else _closeInfoBlock = true;
+        console.log(_closeInfoBlock);
+        setCloseInfoBlock(_closeInfoBlock);
+    }
+
     console.log('TaichungRCIApp : rendering start');
     if(constructionsData === 'loading'){
         return(
@@ -370,19 +395,24 @@ const TaichungRCIApp = ()=>{
                     mapParameters={mapParameters}
                     setMapParameters={setMapParameters}
                 />
-                <InfoButton/>
-                <InfoBlock value={constructionsData}>
-                </InfoBlock>
+                <InfoBlock value={constructionsData}/>
             </div>
         );
-    }else if(constructionsData === null){
+    }
+    else if(constructionsData === null){
         return(
-            <div className='serverError'>
+            <div className='container'>
                 {console.log('TaichungRCIApp : error layout')}
-                {'資料庫狀態異常，請稍後再試'}
+                <Map constructionsData={null}
+                    mapParameters={mapParameters}
+                    setMapParameters={setMapParameters}
+                />
+                <InfoBlock value={null}
+                />
             </div>
         );
-    }else{
+    }
+    else{
         let data = null;
         if(condition.distriction === 0 && condition.date.start === null && condition.date.end === null && condition.workingState === 0){
             data = constructionsData;
@@ -394,16 +424,21 @@ const TaichungRCIApp = ()=>{
                 {console.log('TaichungRCIApp : default layout')}
                 <Map constructionsData={sliceData(data)}
                     mapParameters={mapParameters}
+                    closeInfoBlock={closeInfoBlock}
                     setMapParameters={setMapParameters}
                 />
-                <InfoButton setShowInfoBlock={setShowInfoBlock}/>
+                <InfoButton closeInfoBlock={closeInfoBlock}
+                            handleCloseClick={handleCloseClick}
+                />
                 <InfoBlock value={sliceData(data)}
                           length={data.length}
-                          showInfoBlock={showInfoBlock}
                           option={selectorsOptions}
                           condition={condition}
-                          setCondition={setCondition}
                           mapParameters={mapParameters}
+                          closeInfoBlock={closeInfoBlock}
+                          handleCloseClick={handleCloseClick}
+                          setCondition={setCondition}
+                          setCloseInfoBlock={setCloseInfoBlock}
                           setMapParameters={setMapParameters}
                 />
             </div>

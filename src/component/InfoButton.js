@@ -1,14 +1,10 @@
+const InfoButton = (props)=>{
 
-const InfoButton = ()=>{
-
-    const handleClick = ()=>{
-        if(window.innerWidth <= 428) alert('smul');
-        else alert('big');
-    }
+    let {closeInfoBlock,handleCloseClick} = props;
 
     return(
-        <div className='infoButtonContainer'>
-            <div className='infoButton' onClick={handleClick}>
+        <div className='infoButtonContainer' style={{display:closeInfoBlock ? 'block' : 'none'}}>
+            <div className='button' onClick={handleCloseClick}>
                 <i className="fas fa-search fa-lg"/>
             </div>
         </div>

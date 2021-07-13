@@ -13,7 +13,7 @@ const Card = (props)=>{
         setMapParameters({
             center: data.coordinate,
             polygon: data.coordinate.polygon,
-            zoom: 20,
+            zoom: 20 + (Math.random() / 10000),
             selectMarker: data,
             closeInfoWindow: false
         });

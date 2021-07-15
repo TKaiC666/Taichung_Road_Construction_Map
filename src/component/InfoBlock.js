@@ -7,7 +7,7 @@ import Selectors from './Selectors';
 const InfoBlock = (props)=>{
 
     console.log('InfoBlock : start');
-    const {closeInfoBlock, handleCloseClick, isMobile} = props;
+    const {closeInfoBlock, handleCloseClick, isMobile, makerMessage, handleMakerMessageClick} = props;
     const [pageIndex, setPageIndex] = useState(0);
 
     let cardsNum = useMemo(()=>{
@@ -43,7 +43,8 @@ const InfoBlock = (props)=>{
             </div>
             </div>
         );
-    }else if(props.value === null){
+    }
+    else if(props.value === null){
         return(
             <div className='infoBlockContainer'>
             <div className='infoBlock'>
@@ -54,9 +55,33 @@ const InfoBlock = (props)=>{
             </div>
             </div>
         );
-    }else if(props.value.length === 0){
+    }
+    // else if(makerMessage){
+    //     return(
+    //         <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}>
+    //         <div className='infoBlock'>
+    //             <CloseButton handleCloseClick={handleCloseClick}
+    //                          handleMakerMessageClick={handleMakerMessageClick}
+    //             />
+    //             <div className='cardsListContainer'>
+    //             <div className='cardsList'>
+    //                 <div className='makerMessage'>
+    //                     <p>
+    //                         個人在離開學校後的第一號side project，台中道路施工地圖。
+    //                     </p>
+    //                     <p>
+    //                         兩個多月的製作過程中，除了吸收相關知識，更多時候是再學習認識和了解自己。
+    //                     </p>
+    //                 </div>
+    //             </div>
+    //             </div>
+    //         </div>
+    //         </div>
+    //     );
+    // }
+    else if(props.length === 0){
         return(
-            <div className='infoBlockContainer' style={{display:closeInfoBlock ? 'none' : 'block'}}>
+            <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}>
             <div className='infoBlock'>
                 <CloseButton handleCloseClick={handleCloseClick}/>
                 <div className='toolbarContainer'>
@@ -84,9 +109,10 @@ const InfoBlock = (props)=>{
         let pageBtns = Array.from({length: props.value.length},(_,index)=>index);
         console.log('InfoBlock : render start');
         return(
-            <div className='infoBlockContainer' style={{display:closeInfoBlock ? 'none' : 'block'}}>
-            <div className={`infoBlock ${props.closeInfoBlock ? 'unvisible' : 'visible'}`}>
-                <CloseButton handleCloseClick={handleCloseClick}/>
+            <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}>
+            <div className='infoBlock'>
+                <CloseButton handleCloseClick={handleCloseClick}
+                />
                 <div className='toolbarContainer'>
                     <Selectors
                         options={props.option}
@@ -96,19 +122,6 @@ const InfoBlock = (props)=>{
                         setPageIndex={setPageIndex}
                         setMapParameters={props.setMapParameters}
                     />
-                    {/* {window.innerWidth > 428 && 
-                        <Pagination
-                        // margin={'marginBottom-2'}
-                        pageBtns={pageBtns}
-                        pageIndex={pageIndex}
-                        handlePaginationClick={handlePaginationClick}
-                        />
-                    } */}
-                    {/* <Pagination
-                        pageBtns={pageBtns}
-                        pageIndex={pageIndex}
-                        handlePaginationClick={handlePaginationClick}
-                    /> */}
                 </div>
                 <div className='cardsListContainer'>
                 <div className='cardsList'>

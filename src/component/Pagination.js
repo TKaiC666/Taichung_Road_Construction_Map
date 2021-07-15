@@ -9,7 +9,7 @@ const Pagination = (props)=>{
     let minPageIndex = 0, maxPageIndex = pageBtns.length - 1;
 
     const focusPage = (i)=>{
-        if( i === pageIndex ) return 'bgColor_mintGreen';
+        if( i === pageIndex ) return 'currentPage';
     }
 
     if(pageBtns.length === 1) return null;
@@ -18,7 +18,7 @@ const Pagination = (props)=>{
         let selectValue = null;
         returnElement=
         <div className='pagination unselectable'>
-            <div className='pageElement pageArrow' key={`prePage`}
+            <div className=' pageArrow' key={`prePage`}
                 onClick={()=>{
                     selectValue = pageIndex-1;
                     handleBtnClick(selectValue);
@@ -29,6 +29,7 @@ const Pagination = (props)=>{
             </div>
             <div className='pageElement'>
                 <i className="selectArrow fas fa-chevron-down fa-lg"/>
+                <span>{pageIndex+1}</span>
                 <select id='pageSelect'
                         value={pageIndex}
                         onChange={(e)=>handleBtnClick(Number(e.target.value))}
@@ -43,7 +44,7 @@ const Pagination = (props)=>{
                     }
                 </select>
             </div>
-            <div className='pageElement pageArrow' key={`nextPage`}
+            <div className=' pageArrow' key={`nextPage`}
                 onClick={()=>{
                     selectValue = pageIndex+1;
                     handleBtnClick(selectValue);

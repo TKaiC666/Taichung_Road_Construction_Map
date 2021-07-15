@@ -1,18 +1,13 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {GoogleMap, LoadScript, InfoWindow, MarkerClusterer, Marker, Polygon} from '@react-google-maps/api';
 import CardMini from './CardMini';
 
 const Map = (props)=>{
     const [gridSize, setGridSize] = useState(60);
-    const {constructionsData, mapParameters, closeInfoBlock, setMapParameters, isMobile} = props;
+    const {constructionsData, mapParameters, closeInfoBlock, setMapParameters, isMobile, makerMessage, userLocation} = props;
     const mapRef = useRef(null);
     const APIKey = 'AIzaSyAD3EMZ4E3XEei4WDxlpEaUpiPeOCm5cIQ';
     let isClusterWork = (constructionsData !== null) && (constructionsData.length !== 0) ? true : false;
-
-    useEffect(()=>{
-        console.log('Map : component mount');
-        return(()=>console.log('Map : component unmount'));
-    },[]);
 
     const changeGridSize = ()=>{
         let size = null;
@@ -101,8 +96,8 @@ const Map = (props)=>{
     return(
         <div className='mapContainer'>
         {
-            (constructionsData === null || (closeInfoBlock === false && isMobile)) &&
-            <div className='mapCover'/>
+            (constructionsData === null || (!closeInfoBlock && isMobile) || (makerMessage && isMobile)) &&
+            <div id='mapCover' className={`mapCover ${(constructionsData === null || (!closeInfoBlock && isMobile)) || (makerMessage && isMobile) ? 'open':'close'}`}/>
         }
         <LoadScript googleMapsApiKey={APIKey}>
             <GoogleMap
@@ -124,6 +119,13 @@ const Map = (props)=>{
             >
                 {
                     renderCluster
+                }
+                {
+                    (userLocation !== null) &&
+                    <Marker key='userLocation'
+                            position={userLocation}
+                            zIndex={100}
+                    />
                 }
                 { isInfoWindowShow() && (
                     <InfoWindow
@@ -271,6 +273,192 @@ const mapStyle = [
         "stylers": [
             {
                 "color": "#83cfe2"
+            }
+        ]
+    }
+];
+
+const mapStyle2 = [
+    {
+        "featureType": "water",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#d3d3d3"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "stylers": [
+            {
+                "color": "#808080"
+            },
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "visibility": "on"
+            },
+            {
+                "color": "#b3b3b3"
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#ffffff"
+            }
+        ]
+    },
+    {
+        "featureType": "road.local",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "visibility": "on"
+            },
+            {
+                "color": "#ffffff"
+            },
+            {
+                "weight": 1.8
+            }
+        ]
+    },
+    {
+        "featureType": "road.local",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "color": "#d7d7d7"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "visibility": "on"
+            },
+            {
+                "color": "#ebebeb"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "color": "#a7a7a7"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#ffffff"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#ffffff"
+            }
+        ]
+    },
+    {
+        "featureType": "landscape",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "visibility": "on"
+            },
+            {
+                "color": "#efefef"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels.text.fill",
+        "stylers": [
+            {
+                "color": "#696969"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative",
+        "elementType": "labels.text.fill",
+        "stylers": [
+            {
+                "visibility": "on"
+            },
+            {
+                "color": "#737373"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "labels",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "color": "#d6d6d6"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {},
+    {
+        "featureType": "poi",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#dadada"
             }
         ]
     }

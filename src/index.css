@@ -339,6 +339,58 @@ template {
   display: none;
 }
 
+@keyframes open {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+    will-change: transform;
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+    will-change: transform;
+  }
+}
+@keyframes close {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+    will-change: transform;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+    will-change: transform;
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 0;
+  }
+}
 @media (max-width: 1024px) {
   .react-datepicker {
     font-size: 1em;
@@ -413,20 +465,23 @@ html, body {
   @supports (-webkit-touch-callout: none) {
     .cardsList {
       /* CSS specific to iOS devices */
-      width: calc(100% - 2em * 2);
-      padding: 0 2em 2em;
+      width: calc(100% - 3em * 2);
+      padding: 0 3em 3em;
     }
   }
   @supports not (-webkit-touch-callout: none) {
     .cardsList {
       /* CSS for other than iOS devices */
-      width: calc(100% - 2em * 2 + 10px);
-      padding: 0 calc(2em - 10px) 2em 2em;
+      width: calc(100% - 3em * 2 + 10px);
+      padding: 0 calc(3em - 10px) 3em 3em;
     }
   }
 
   .selectors {
     font-size: 16px !important;
+  }
+  .selectors span {
+    padding: 7.5px 10px !important;
   }
   .selectors select {
     padding: 7.5px 10px !important;
@@ -437,16 +492,15 @@ html, body {
 
   .pagination {
     display: flex;
-    gap: 10px;
+    gap: 15px;
   }
   .pagination .pageArrow {
     flex: 1;
     font-size: 20px;
-    width: 60px !important;
     line-height: 50px;
   }
   .pagination .pageElement {
-    flex: 1;
+    flex: 2;
     position: relative;
   }
   .pagination .pageElement .selectArrow {
@@ -463,10 +517,19 @@ html, body {
     background-color: #ffffff;
     text-align-last: center;
   }
-  @supports (-webkit-touch-callout: none) {
-    .pagination .pageElement select {
-      text-align: -webkit-center;
-    }
+  .pagination span {
+    position: absolute;
+    text-align: center;
+    font-size: 1.5em;
+    width: calc(100% - 22px);
+    line-height: 50px;
+    pointer-events: none;
+  }
+  .pagination select {
+    color: white;
+  }
+  .pagination select option {
+    color: black;
   }
   .pagination select, .pagination option {
     -webkit-appearance: none;
@@ -530,10 +593,11 @@ html, body {
 
   .cardMini {
     width: 280px;
-    font-size: 18px;
+    font-size: 14px;
+    padding-right: 20px;
   }
-  .cardMini i {
-    padding: 0 0.75em;
+  .cardMini .date i {
+    padding: 0 10px;
   }
 
   .card-meta-title .state {
@@ -650,14 +714,6 @@ html, body {
   animation-timing-function: ease-in-out;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 .mapContainer {
   width: 100%;
   height: 100%;
@@ -667,9 +723,6 @@ html, body {
 }
 .mapContainer * .gm-style-cc {
   display: none;
-}
-.mapContainer * .gm-style a[href^="https://maps.google.com/maps"] {
-  display: none !important;
 }
 .mapContainer * .gm-ui-hover-effect img {
   width: 20px !important;
@@ -686,7 +739,18 @@ html, body {
   width: 100%;
   height: 100%;
   background-color: #000000;
-  opacity: 0.5;
+}
+.mapCover.open {
+  animation-name: fadeIn;
+  animation-duration: 0.35s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+.mapCover.close {
+  animation-name: fadeOut;
+  animation-duration: 0.35s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
 }
 
 .infoButtonContainer {
@@ -694,9 +758,39 @@ html, body {
   top: 0;
   left: 0;
   margin: 20px;
+  flex-direction: column;
+  gap: 15px;
+  display: flex;
+}
+.infoButtonContainer.open {
+  animation-name: open;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+.infoButtonContainer.close {
+  animation-name: close;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
 }
 .infoButtonContainer .button {
+  width: 65px;
+  line-height: 65px;
+  border-radius: 50px;
+  transition: all 0.2s;
+  color: #3da7a7;
+  background-color: #ffffff;
+  font-size: 20px;
+  text-align: center;
+  vertical-align: middle;
   box-shadow: 0px 0px 10px -1px #646464;
+}
+.infoButtonContainer .button:hover {
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #ffffff;
+  background-color: #3da7a7;
 }
 
 .closeButtonContainer {
@@ -721,38 +815,11 @@ html, body {
   transition: all 0.5s;
 }
 
-.button {
-  width: 65px;
-  line-height: 65px;
-  border-radius: 50px;
-  transition: all 0.2s;
-  color: #7dcdcd;
-  background-color: #ffffff;
-  font-size: 20px;
-  text-align: center;
-  vertical-align: middle;
-  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
-}
-.button:hover {
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #ffffff;
-  background-color: #7dcdcd;
-}
-
-.visible {
-  visibility: visible;
-}
-
-.unvisible {
-  visibility: hidden;
-}
-
 .selectArrow {
   font-size: 12px;
   position: absolute;
   height: 12px;
-  top: 4px;
+  top: 0;
   bottom: 0;
   right: 8px;
   margin: auto;
@@ -788,6 +855,15 @@ html, body {
 .pagination .dot::after {
   content: "...";
 }
+.pagination .currentPage {
+  background-color: #3da7a7;
+  color: #ffffff;
+}
+.pagination .currentPage:hover {
+  cursor: default;
+  background-color: #3da7a7;
+  color: #ffffff;
+}
 
 .selectors {
   display: flex;
@@ -799,12 +875,35 @@ html, body {
   flex: 1 1 auto;
   position: relative;
 }
+.selectors .selectContainer span {
+  z-index: 2;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  line-height: 1.5em;
+  padding: 5px calc(11px + 0.7em) 5px 11px;
+  margin: 0 auto;
+  pointer-events: none;
+}
+.selectors .selectContainer .selectArrow {
+  color: #000000;
+}
+.selectors .selectContainer .selectArrow:not([data-chosen="0"]) {
+  color: #ffffff;
+}
 .selectors .selectContainer select {
+  z-index: 1;
   line-height: 1.5em;
   width: 100%;
   padding: 5px calc(10px + 0.7em) 5px 10px;
-  text-align-last: center;
-  text-align: -webkit-center;
+  color: #ffffff;
+  background-color: #ffffff;
+}
+.selectors .selectContainer select option {
+  color: #000000;
 }
 .selectors .selectContainer select option:hover {
   background-color: #7dcdcd;
@@ -812,16 +911,16 @@ html, body {
 .selectors .selectContainer select::-webkit-scrollbar-track {
   background-color: #ffffff;
 }
-.selectors .selectContainer select[data-chosen="0"] {
-  background-color: #ffffff;
-}
 .selectors .selectContainer select:not([data-chosen="0"]) {
   background-color: #3da7a7;
-  color: white;
+  color: #3da7a7;
 }
 .selectors .selectContainer select:not([data-chosen="0"]) option {
   background-color: #ffffff;
   color: #000000;
+}
+.selectors .selectContainer select:not([data-chosen="0"]) + span {
+  color: #ffffff;
 }
 .selectors .dateSelectContainer {
   flex: 1 1 auto;
@@ -881,7 +980,7 @@ html, body {
 
 .cardsList {
   position: absolute;
-  height: calc(100% - 5px - 20px);
+  height: calc(100% - 2em);
   overflow-y: scroll;
 }
 
@@ -911,9 +1010,22 @@ html, body {
 .infoBlockContainer {
   position: fixed;
 }
+.infoBlockContainer.open {
+  display: block;
+  animation-name: open;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+.infoBlockContainer.close {
+  animation-name: close;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
 
 .infoBlock {
-  height: calc(calc(var(--vh, 1vh) * 100) - 20px * 2 - 2em);
+  height: calc(calc(var(--vh, 1vh) * 100) - 20px * 2 - 2.5em);
   display: flex;
   flex-flow: column;
   background-color: #f8f8f8;
@@ -1088,7 +1200,11 @@ html, body {
 
 .cardMini {
   padding: 0 5px;
+  font-family: "Noto Sans TC", sans-serif !important;
   font-weight: 400;
+}
+.cardMini .inlineBlock {
+  display: inline-block;
 }
 .cardMini .title {
   margin: 0px 0px 15px;
@@ -1098,6 +1214,7 @@ html, body {
   color: #505050;
   margin-bottom: 2px;
   letter-spacing: 1px;
+  font-weight: 300;
 }
 .cardMini .item::before {
   display: inline-block;
@@ -1110,7 +1227,7 @@ html, body {
   margin-right: 5px;
 }
 .cardMini .data {
-  font-weight: 500;
+  font-weight: 400;
   margin-bottom: 15px;
   letter-spacing: 2px;
 }
@@ -1141,6 +1258,12 @@ html, body {
   direction: rtl;
   text-align: center;
 }
+.cardMini .pipeType {
+  font-size: 1.25em;
+  vertical-align: middle;
+  text-align: center;
+  margin-left: 1em;
+}
 .cardMini .working {
   border: #FF7777 1.5px solid;
   color: #FF7777;
@@ -1160,6 +1283,19 @@ html, body {
   font-size: 2em;
   line-height: 2em;
   color: #7dcdcd;
+}
+
+.makerMessage {
+  font-size: 1.25em;
+  line-height: 1.5em;
+  color: #505050;
+  letter-spacing: 0.5px;
+}
+.makerMessage img {
+  display: block;
+  width: 6.5em;
+  height: 6.5em;
+  margin: 2em auto;
 }
 
 .serverError {

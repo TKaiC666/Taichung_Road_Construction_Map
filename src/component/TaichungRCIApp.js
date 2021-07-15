@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import CloseButton from './CloseButton';
 import Map from './Map'
 import InfoBlock from './InfoBlock';
 import InfoButton from './InfoButton';
+import MakerMessage from './MakerMessage';
 
 const TaichungRCIApp = ()=>{
     console.log('TaichungRCIApp : start');
+    const [isMobile, setIsMobile] = useState(null);
+    const [userLocation, setUserLocation] = useState(null);
+    const [closeInfoBlock, setCloseInfoBlock] = useState(false);
+    const [makerMessage, setMakerMessage] = useState(false);
     const [constructionsData, setConstructionsData] = useState('loading');
     const [condition, setCondition] = useState({workingState:'是', distriction:0, date:{start:null,end:null}, stack:['workingState']});
-    const [closeInfoBlock, setCloseInfoBlock] = useState(false);
-    const [isMobile, setIsMobile] = useState(null);
     const [mapParameters, setMapParameters] = useState({
         center:{lat : 24.1512535, lng : 120.6617366},
         polygon: null,
@@ -17,25 +19,51 @@ const TaichungRCIApp = ()=>{
         selectMarker: null,
         closeInfoWindow: null
     });
-    // const findUserLocation = ()=>{
-    //     if('geolocation' in navigator){
-    //         navigator.geolocation.getCurrentPosition((position)=>{
-    //             console.log(position.coords.latitude, position.coords.longitude);
-    //             setConstructionLocation({lat: position.coords.latitude, lng: position.coords.longitude});
-    //         });
-    //     }else{
-    //         console.log('geolocation is not available');
-    //     }
-    // }
 
-    // window.addEventListener('orientationchange',()=>{
-    //     let afterOrientationChange = ()=>{
-    //         let baseLength = window.innerHeight;
-    //         document.documentElement.style.setProperty('--vh', `${baseLength/100}px`);
-    //         window.removeEventListener('resize', afterOrientationChange);
-    //     }
-    //     window.addEventListener('resize', afterOrientationChange);
-    // });
+    const INITAIL = ()=>{
+        let isMobileOnInitial = null;
+        changeInfoWindowHeight();
+        isMobileOnInitial = isWidthUnder(428);
+        window.addEventListener('resize', changeInfoWindowHeight);
+        window.addEventListener('resize', ()=>isWidthUnder(428));
+        initialInfoBlockDisplay(isMobileOnInitial);
+        findUserLocation();
+    }
+
+    const findUserLocation = ()=>{
+
+        const handleUserLocation = (position)=>{
+            let _mapParameters = {
+                center:{lat : position.coords.latitude, lng : position.coords.longitude},
+                polygon: null,
+                zoom: 12,
+                selectMarker: null,
+                closeInfoWindow: null
+            };
+            setMapParameters(_mapParameters);
+            setUserLocation(_mapParameters.center);
+        }
+
+        if(navigator.geolocation){
+            // navigator.geolocation.getCurrentPosition((position)=>{
+            //     let _mapParameters = {
+            //         center:{lat : position.coords.latitude, lng : position.coords.longitude},
+            //         polygon: null,
+            //         zoom: 12,
+            //         selectMarker: null,
+            //         closeInfoWindow: null
+            //     };
+            //     setMapParameters(_mapParameters);
+            //     setUserLocation(_mapParameters.center);
+            // });
+            let watchID = navigator.geolocation.watchPosition((position)=>{
+                // alert('watch position');
+                handleUserLocation(position);
+            });
+        }else{
+            console.log('geolocation is not available');
+        }
+    }
 
     const changeInfoWindowHeight = ()=>{
         document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
@@ -49,7 +77,7 @@ const TaichungRCIApp = ()=>{
         return bool;
     }
 
-    const setInfoBlockOnLaunch = (bool)=>{
+    const initialInfoBlockDisplay = (bool)=>{
         setCloseInfoBlock(bool);
     }
 
@@ -185,7 +213,7 @@ const TaichungRCIApp = ()=>{
             const testAPI_ERROR = 'testing_server-error.json';
 
             console.time('fetch花費時間');
-            fetch(API_URL)
+            fetch(testAPI_LOCAL)
             .then((response) => {
                 console.timeEnd('fetch花費時間');
                 if(response.status === 200){
@@ -212,12 +240,7 @@ const TaichungRCIApp = ()=>{
     },[]);
 
     useEffect(()=>{
-        let isMobileOnLaunch = null;
-        changeInfoWindowHeight();
-        isMobileOnLaunch = isWidthUnder(428);
-        window.addEventListener('resize', changeInfoWindowHeight);
-        window.addEventListener('resize', ()=>isWidthUnder(428));
-        setInfoBlockOnLaunch(isMobileOnLaunch);
+        INITAIL();
         fetchData();
     },[fetchData]);
 
@@ -307,8 +330,11 @@ const TaichungRCIApp = ()=>{
         if(_closeInfoBlock !== null){
             _closeInfoBlock = !_closeInfoBlock;
         }else _closeInfoBlock = true;
-        console.log(_closeInfoBlock);
         setCloseInfoBlock(_closeInfoBlock);
+    }
+
+    const handleMakerMessageClick = ()=>{
+        setMakerMessage(!makerMessage);
     }
 
     console.log('TaichungRCIApp : rendering start');
@@ -351,10 +377,17 @@ const TaichungRCIApp = ()=>{
                     mapParameters={mapParameters}
                     closeInfoBlock={closeInfoBlock}
                     setMapParameters={setMapParameters}
+                    makerMessage={makerMessage}
                     isMobile={isMobile}
+                    userLocation={userLocation}
                 />
                 <InfoButton closeInfoBlock={closeInfoBlock}
+                            makerMessage={makerMessage}
                             handleCloseClick={handleCloseClick}
+                            handleMakerMessageClick={handleMakerMessageClick}
+                            userLocation={userLocation}
+                            mapParameters={mapParameters}
+                            setMapParameters={setMapParameters}
                 />
                 <InfoBlock value={sliceData(data)}
                           length={data.length}
@@ -363,9 +396,14 @@ const TaichungRCIApp = ()=>{
                           mapParameters={mapParameters}
                           closeInfoBlock={closeInfoBlock}
                           isMobile={isMobile}
+                          makerMessage={makerMessage}
+                          handleMakerMessageClick={handleMakerMessageClick}
                           handleCloseClick={handleCloseClick}
                           setCondition={setCondition}
                           setMapParameters={setMapParameters}
+                />
+                <MakerMessage makerMessage={makerMessage}
+                              handleMakerMessageClick={handleMakerMessageClick}
                 />
             </div>
         );

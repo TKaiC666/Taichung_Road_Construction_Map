@@ -4,9 +4,14 @@ const CardMini = (props)=>{
     return(
         <div className='cardMini'>
             <div className='title'>
-                <div className={`title state ${data.workingState === '是' ? 'working' : 'notWorking'}`}>
+                <div className={`state inlineBlock ${data.workingState === '是' ? 'working' : 'notWorking'}`}>
                     {data.workingState === '是' ? '施工中' : '未施工'}
                 </div>
+                <div className='pipeType inlineBlock'>
+                    {data.pipeType}
+                </div>
+            </div>
+            <div className='title'>
                 <div className='date'>
                     <span className='slash'>{data.date.start.year}</span><span className='slash'>{data.date.start.month}</span><span>{data.date.start.day}</span>
                     <i className="fas fa-caret-right fa-lg"/>

@@ -7,17 +7,22 @@ const Selectors = (props)=>{
 
     const [dateRange, setDateRange] = useState([null, null]);
     const [startDate, endDate] = dateRange;
-    const [isSelected, setIsSelected] = useState('');
     const [dateOnPicker,setDateOnPicker] = useState('');
     const {options, condition, mapParameters, setCondition, setPageIndex, setMapParameters}= props;
-    registerLocale('zh-TW',zh_TW);
+
+    const INITAIL = ()=>{
+        let node = document.getElementById('districtionSelect');
+        setCSSChosenValue(node);
+        setCSSChosenValue(node.previousElementSibling, node.value);
+        registerLocale('zh-TW',zh_TW);
+    }
 
     useEffect(()=>{
-        setCSSChosenValue(document.getElementById('districtionSelect'));
+        INITAIL();
     },[]);
 
-    const setCSSChosenValue = (element)=>{
-        element.dataset.chosen = element.value;
+    const setCSSChosenValue = (element, value=element.value)=>{
+        element.dataset.chosen = value;
     }
 
     const addZero2String = (time)=>{
@@ -36,57 +41,31 @@ const Selectors = (props)=>{
         });
     }
 
-    //回傳值用destructuring assignment接
-    const changeConditionPara = (target, para)=>{
-        let _target = target;
-        let _para = para;
-        let [_workingState, _dist, _startDate, _endDate, _dateOnPicker] = [...para];
-        if(_target === 'distriction'){
-            _dist = 0;
-        }else if(_target === 'date'){
-            _startDate = null;
-            _endDate = null;
-            _dateOnPicker = '';
-        }else if(_target === 'workingState'){
-            _workingState = 0;
-        }
-        return([_workingState, _dist, _startDate, _endDate, _dateOnPicker]);
-    }
+    const getSelectValue = (id)=>{
+        let element = document.getElementById(id);
+        let value = null;
 
-    /**
-     * 將指定變數從condition stack pop out
-     * @param {*} target 要從condition stack pop out的條件
-     * @param {*} para handler會用到的parameter
-     * @returns 回傳pop後的condition stack和handler parameter
-     */
-    const popStack = (target, para)=>{
-        console.log('popStack() : ');
-        console.log([target, para]);
-        let _stack = [...condition.stack]; //shallow copy
-        let _para = para;
-        let _target = target;
-        //假設順序，distriction、date、workingState
-        while(_stack.indexOf(_target) !== -1){
-            let popElement = _stack.pop();
-            if(popElement === _target){
-                if(popElement === 'date'){
-                    _para = changeConditionPara('date', _para);
-                    setDateRange([null,null]);
-                }else{
-                    _para = changeConditionPara(popElement, _para);
-                    document.getElementById(popElement+'Select').value = 0;
-                }    
-                break;
-            }else if(popElement === 'date'){
-                _para = changeConditionPara('date', _para);
-                setDateRange([null,null]);
-            }else{
-                _para = changeConditionPara(popElement, _para);
-                document.getElementById(popElement+'Select').value = 0;
-            }    
+        if(element === null) return '載入中';
+        else value =  element.value;
+
+        if(id === 'workingStateSelect'){
+            switch(value){
+                case '0' : 
+                    value = '全案件';
+                    break;
+                case '是' :
+                    value = '施工中';
+                    break;
+                case '否' :
+                    value = '未施工';
+                    break;
+            }
         }
-        console.log([_stack, _para]);
-        return [_stack, _para];
+        if(id === 'districtionSelect' && value === '0'){
+            value = '全地區';
+        }
+
+        return value;
     }
 
     console.log('Selectors : '+condition.distriction);
@@ -102,6 +81,8 @@ const Selectors = (props)=>{
         let _dateOnPicker = dateOnPicker;
         let stack = condition.stack;
         setCSSChosenValue(e.target);
+        setCSSChosenValue(e.target.previousElementSibling, e.target.value);
+
         if(stack.indexOf('workingState') === -1) stack.push('workingState');
         else if(workingState === 0){
             stack = stack.filter((e)=>e!=='workingState');
@@ -130,6 +111,7 @@ const Selectors = (props)=>{
         let _dateOnPicker = dateOnPicker;
         let stack = condition.stack;
         setCSSChosenValue(e.target);
+        setCSSChosenValue(e.target.previousElementSibling, e.target.value);
 
         if(stack.indexOf('distriction') === -1) stack.push('distriction');
         else if(dist === 0){
@@ -193,8 +175,7 @@ const Selectors = (props)=>{
         <div className='selectors'>
             <div className='selectContainer'>
                 <i className="selectArrow fas fa-chevron-down"/>
-                <select className='ss'
-                        name='workingState'
+                <select name='workingState'
                         id='workingStateSelect'
                         defaultValue='是'
                         onChange={handleWorkingState}
@@ -208,6 +189,7 @@ const Selectors = (props)=>{
                         ))
                     }
                 </select>
+                <span>{getSelectValue('workingStateSelect')}</span>
             </div>
             <div className='selectContainer'>
                 <i className="selectArrow fas fa-chevron-down"/>
@@ -224,6 +206,7 @@ const Selectors = (props)=>{
                         ))
                     }
                 </select>   
+                <span>{getSelectValue('districtionSelect')}</span>
             </div>
             <DatePicker
                 value={dateOnPicker}

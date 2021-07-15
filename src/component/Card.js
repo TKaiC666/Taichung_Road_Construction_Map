@@ -10,10 +10,11 @@ const Card = (props)=>{
     }
 
     const handleLocationData = ()=>{
+        let randomNum = Math.random() / 1000000;
         setMapParameters({
-            center: data.coordinate,
+            center: {lat:data.coordinate.lat + randomNum, lng:data.coordinate.lng + randomNum},
             polygon: data.coordinate.polygon,
-            zoom: 20 + (Math.random() / 10000),
+            zoom: 20 + randomNum,
             selectMarker: data,
             closeInfoWindow: false
         });

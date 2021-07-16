@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/Taichung_Road_Construction_Map/static/css/main.bdd8a391.chunk.css",
-    "main.js": "/Taichung_Road_Construction_Map/static/js/main.cb7a9f7f.chunk.js",
-    "main.js.map": "/Taichung_Road_Construction_Map/static/js/main.cb7a9f7f.chunk.js.map",
+    "main.js": "/Taichung_Road_Construction_Map/static/js/main.ad0c0c00.chunk.js",
+    "main.js.map": "/Taichung_Road_Construction_Map/static/js/main.ad0c0c00.chunk.js.map",
     "runtime-main.js": "/Taichung_Road_Construction_Map/static/js/runtime-main.c8b816d5.js",
     "runtime-main.js.map": "/Taichung_Road_Construction_Map/static/js/runtime-main.c8b816d5.js.map",
     "static/css/2.2fe478ad.chunk.css": "/Taichung_Road_Construction_Map/static/css/2.2fe478ad.chunk.css",
@@ -20,6 +20,6 @@
     "static/css/2.2fe478ad.chunk.css",
     "static/js/2.5e07f46d.chunk.js",
     "static/css/main.bdd8a391.chunk.css",
-    "static/js/main.cb7a9f7f.chunk.js"
+    "static/js/main.ad0c0c00.chunk.js"
   ]
 }

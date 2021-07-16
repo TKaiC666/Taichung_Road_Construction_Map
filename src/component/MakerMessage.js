@@ -16,7 +16,7 @@ const MakerMessage = (props)=>{
         <div className='infoBlock maker'>
             <CloseButton handleMakerMessageClick={handleMakerMessageClick}/>
             <div className='makerMessage flex'>
-                <img src={process.env.PUBLIC_URL+'img/logo.png'} alt={'Kai\'s logo'}/>
+                <img src={process.env.PUBLIC_URL+'/img/logo.png'} alt={'Kai\'s logo'}/>
                 <article>
                     <p>嗨，我是Kai。</p>
                     <p>台中道路施工地圖是為了練習API串接所做的side project。</p>

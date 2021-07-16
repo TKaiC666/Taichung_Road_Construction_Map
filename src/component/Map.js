@@ -302,28 +302,28 @@ const clustersOptions = {
             textSize : 14,
             height: 66,
             width: 66,
-            url: process.env.PUBLIC_URL+"img/markerclusterer/m1.png"
+            url: process.env.PUBLIC_URL+"/img/markerclusterer/m1.png"
         },
         {
             textSize : 14,
             height: 66,
             width: 66,
-            url: process.env.PUBLIC_URL+"img/markerclusterer/m2.png",
+            url: process.env.PUBLIC_URL+"/img/markerclusterer/m2.png",
         },
         {
             height: 66,
             width: 66,
-            url: process.env.PUBLIC_URL+"img/markerclusterer/m3.png",
+            url: process.env.PUBLIC_URL+"/img/markerclusterer/m3.png",
         },
         {
             height: 66,
             width: 66,
-            url: process.env.PUBLIC_URL+"img/markerclusterer/m4.png",
+            url: process.env.PUBLIC_URL+"/img/markerclusterer/m4.png",
         },
         {
             height: 66,
             width: 66,
-            url: process.env.PUBLIC_URL+"img/markerclusterer/m5.png",
+            url: process.env.PUBLIC_URL+"/img/markerclusterer/m5.png",
         }
     ]
 }

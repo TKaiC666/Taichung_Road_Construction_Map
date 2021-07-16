@@ -98,6 +98,7 @@ const InfoBlock = (props)=>{
                         condition={props.condition}
                         setCondition={props.setCondition}
                         setPageIndex={setPageIndex}
+                        mapParameters={props.mapParameters}
                         setMapParameters={props.setMapParameters}
                     />
                 </div>
@@ -114,7 +115,6 @@ const InfoBlock = (props)=>{
                         cardsNum.map((i)=>(
                             <Card key={'card'+(pageIndex*10+i+1)}
                                 value={props.value[pageIndex][i]}
-                                mapParameters={props.mapParameters}
                                 setMapParameters={props.setMapParameters}
                             />
                         ))

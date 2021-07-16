@@ -359,6 +359,7 @@ html,body{
         animation-fill-mode: forwards;
     }
     &.close{
+        pointer-events: none;
         animation-name: fadeOut;
         animation-duration: 0.35s;
         animation-timing-function: ease-in-out;
@@ -661,16 +662,16 @@ html,body{
 
 .infoBlockContainer{
     position: fixed;
+    &.hide{
+        display: none;
+    }
     &.open{
-        // visibility: visible;
-        display: block;
         animation-name: open;
         animation-duration: 0.4s;
         animation-timing-function: ease-in-out;
         animation-fill-mode: forwards;
     }
     &.close{
-        // display: none;
         animation-name: close;
         animation-duration: 0.3s;
         animation-timing-function: ease-in-out;
@@ -692,6 +693,10 @@ html,body{
     border-radius: 1em;
     box-shadow: 0px 0px 10px 5px $boxShadow;
     overflow: hidden;
+    &.maker{
+        display: block;
+        position: relative;
+    }
 }
 
 .toolbarContainer{
@@ -971,16 +976,52 @@ html,body{
     }
 }
 
+.makerMessageContainer{
+    // position: relative;
+}
+
+.flex{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 .makerMessage{
+    position: relative;
+    height: calc(100% - 2em);
     font-size: 1.25em;
-    line-height: 1.5em;
+    padding: 0 2em 2em;
     color: $minor;
+    line-height: 1.5em;
     letter-spacing: 0.5px;
+    overflow-y: scroll;
     img{
         display: block;
         width: 6.5em;
         height: 6.5em;
-        margin: 2em auto;
+        margin: 0 auto 0;
+        padding-top: 2em;
+    }
+    .socialMedia{
+        align-self: flex-end;
+        // position: absolute;
+        // bottom: 0;
+        // right: 0;
+        // margin: 2em;
+        a{
+            margin-right: 10px;
+            &:last-child{
+                margin-right: 0px;
+            }
+        }
+        i{
+            font-size: 2em;
+            color: $minor;
+            &:hover{
+                color: $minor-hover;
+                cursor: pointer;
+            }
+        }
     }
 }
 

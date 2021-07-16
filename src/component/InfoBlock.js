@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Card from './Card';
 import CloseButton from './CloseButton';
 import Pagination from './Pagination';
@@ -7,7 +7,7 @@ import Selectors from './Selectors';
 const InfoBlock = (props)=>{
 
     console.log('InfoBlock : start');
-    const {closeInfoBlock, handleCloseClick, isMobile, makerMessage, handleMakerMessageClick} = props;
+    const {closeInfoBlock, handleCloseClick, isMobile} = props;
     const [pageIndex, setPageIndex] = useState(0);
 
     let cardsNum = useMemo(()=>{
@@ -25,10 +25,16 @@ const InfoBlock = (props)=>{
     },[props.value, pageIndex]);
 
     const handlePaginationClick = (x)=>{
-        console.log(x);
         if(x > (props.value.length - 1) || x < 0) return;
         document.getElementById('topAnchor').scrollIntoView(false);
         setPageIndex(x);
+    }
+    
+    const getCSSState = (condition)=>{
+        let state = '';
+        if(condition === true) state = 'close';
+        else if(condition === false || condition === null) state = 'open';
+        return state;
     }
 
     console.log('InfoBlock : page index : '+pageIndex+', cardsNum : '+cardsNum);
@@ -56,32 +62,9 @@ const InfoBlock = (props)=>{
             </div>
         );
     }
-    // else if(makerMessage){
-    //     return(
-    //         <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}>
-    //         <div className='infoBlock'>
-    //             <CloseButton handleCloseClick={handleCloseClick}
-    //                          handleMakerMessageClick={handleMakerMessageClick}
-    //             />
-    //             <div className='cardsListContainer'>
-    //             <div className='cardsList'>
-    //                 <div className='makerMessage'>
-    //                     <p>
-    //                         個人在離開學校後的第一號side project，台中道路施工地圖。
-    //                     </p>
-    //                     <p>
-    //                         兩個多月的製作過程中，除了吸收相關知識，更多時候是再學習認識和了解自己。
-    //                     </p>
-    //                 </div>
-    //             </div>
-    //             </div>
-    //         </div>
-    //         </div>
-    //     );
-    // }
     else if(props.length === 0){
         return(
-            <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}>
+            <div className={`infoBlockContainer ${getCSSState(closeInfoBlock)}`}>
             <div className='infoBlock'>
                 <CloseButton handleCloseClick={handleCloseClick}/>
                 <div className='toolbarContainer'>
@@ -109,7 +92,8 @@ const InfoBlock = (props)=>{
         let pageBtns = Array.from({length: props.value.length},(_,index)=>index);
         console.log('InfoBlock : render start');
         return(
-            <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}>
+            <div className={`infoBlockContainer ${getCSSState(closeInfoBlock)}`}>
+            {/* <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}> */}
             <div className='infoBlock'>
                 <CloseButton handleCloseClick={handleCloseClick}
                 />

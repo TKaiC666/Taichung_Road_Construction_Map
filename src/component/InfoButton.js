@@ -14,11 +14,11 @@ const InfoButton = (props)=>{
     }
 
     return(
-        <div className={`infoButtonContainer ${(closeInfoBlock && !makerMessage) ? 'open':'close'}`}>
+        <div className={`infoButtonContainer ${(closeInfoBlock !== false && makerMessage !== true) ? 'open':'close'}`}>
             <div className='button' onClick={handleCloseClick}>
                 <i className="fas fa-search fa-lg"/>
             </div>
-            <div className='button' onClick={handleLocationClick} style={{display:userLocation==null ? 'none' : ''}}>
+            <div className='button' onClick={handleLocationClick} style={{display:userLocation===null ? 'none' : ''}}>
                 <i className="fas fa-map-marker-alt fa-lg"/>
             </div>
             <div className='button' onClick={()=>{

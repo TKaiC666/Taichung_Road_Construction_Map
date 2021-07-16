@@ -747,6 +747,7 @@ html, body {
   animation-fill-mode: forwards;
 }
 .mapCover.close {
+  pointer-events: none;
   animation-name: fadeOut;
   animation-duration: 0.35s;
   animation-timing-function: ease-in-out;
@@ -1010,8 +1011,10 @@ html, body {
 .infoBlockContainer {
   position: fixed;
 }
+.infoBlockContainer.hide {
+  display: none;
+}
 .infoBlockContainer.open {
-  display: block;
   animation-name: open;
   animation-duration: 0.4s;
   animation-timing-function: ease-in-out;
@@ -1032,6 +1035,10 @@ html, body {
   border-radius: 1em;
   box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+}
+.infoBlock.maker {
+  display: block;
+  position: relative;
 }
 
 .toolbarContainer {
@@ -1285,17 +1292,45 @@ html, body {
   color: #7dcdcd;
 }
 
+.flex {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .makerMessage {
+  position: relative;
+  height: calc(100% - 2em);
   font-size: 1.25em;
-  line-height: 1.5em;
+  padding: 0 2em 2em;
   color: #505050;
+  line-height: 1.5em;
   letter-spacing: 0.5px;
+  overflow-y: scroll;
 }
 .makerMessage img {
   display: block;
   width: 6.5em;
   height: 6.5em;
-  margin: 2em auto;
+  margin: 0 auto 0;
+  padding-top: 2em;
+}
+.makerMessage .socialMedia {
+  align-self: flex-end;
+}
+.makerMessage .socialMedia a {
+  margin-right: 10px;
+}
+.makerMessage .socialMedia a:last-child {
+  margin-right: 0px;
+}
+.makerMessage .socialMedia i {
+  font-size: 2em;
+  color: #505050;
+}
+.makerMessage .socialMedia i:hover {
+  color: #868686;
+  cursor: pointer;
 }
 
 .serverError {

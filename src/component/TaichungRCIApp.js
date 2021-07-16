@@ -9,7 +9,7 @@ const TaichungRCIApp = ()=>{
     const [isMobile, setIsMobile] = useState(null);
     const [userLocation, setUserLocation] = useState(null);
     const [closeInfoBlock, setCloseInfoBlock] = useState(false);
-    const [makerMessage, setMakerMessage] = useState(false);
+    const [makerMessage, setMakerMessage] = useState(null);
     const [constructionsData, setConstructionsData] = useState('loading');
     const [condition, setCondition] = useState({workingState:'是', distriction:0, date:{start:null,end:null}, stack:['workingState']});
     const [mapParameters, setMapParameters] = useState({
@@ -26,7 +26,7 @@ const TaichungRCIApp = ()=>{
         isMobileOnInitial = isWidthUnder(428);
         window.addEventListener('resize', changeInfoWindowHeight);
         window.addEventListener('resize', ()=>isWidthUnder(428));
-        initialInfoBlockDisplay(isMobileOnInitial);
+        // initialInfoBlockDisplay(isMobileOnInitial);
         findUserLocation();
     }
 
@@ -45,21 +45,13 @@ const TaichungRCIApp = ()=>{
         }
 
         if(navigator.geolocation){
-            // navigator.geolocation.getCurrentPosition((position)=>{
-            //     let _mapParameters = {
-            //         center:{lat : position.coords.latitude, lng : position.coords.longitude},
-            //         polygon: null,
-            //         zoom: 12,
-            //         selectMarker: null,
-            //         closeInfoWindow: null
-            //     };
-            //     setMapParameters(_mapParameters);
-            //     setUserLocation(_mapParameters.center);
-            // });
-            let watchID = navigator.geolocation.watchPosition((position)=>{
-                // alert('watch position');
+            navigator.geolocation.getCurrentPosition((position)=>{
                 handleUserLocation(position);
             });
+            // let watchID = navigator.geolocation.watchPosition((position)=>{
+            //     // alert('watch position');
+            //     handleUserLocation(position);
+            // });
         }else{
             console.log('geolocation is not available');
         }
@@ -329,37 +321,31 @@ const TaichungRCIApp = ()=>{
         let _closeInfoBlock = closeInfoBlock;
         if(_closeInfoBlock !== null){
             _closeInfoBlock = !_closeInfoBlock;
-        }else _closeInfoBlock = true;
+        }else _closeInfoBlock = false;
         setCloseInfoBlock(_closeInfoBlock);
     }
 
     const handleMakerMessageClick = ()=>{
-        setMakerMessage(!makerMessage);
+        let _makerMessage = makerMessage;
+        if(makerMessage !== null){
+            _makerMessage = !_makerMessage;
+        }else _makerMessage = true;
+        setMakerMessage(_makerMessage);
     }
 
     console.log('TaichungRCIApp : rendering start');
-    if(constructionsData === 'loading'){
+    if(constructionsData === 'loading' || constructionsData === null){
+        let logMessage = '';
+        if(constructionsData === 'loading') logMessage = 'TaichungRCIApp : loading layout';
+        if(constructionsData === null) logMessage = 'TaichungRCIApp : error layout';
         return(
             <div>
-                {console.log('TaichungRCIApp : loading layout')}
+                {console.log(logMessage)}
                 <Map constructionsData={null} 
                     mapParameters={mapParameters}
                     setMapParameters={setMapParameters}
                 />
                 <InfoBlock value={constructionsData}/>
-            </div>
-        );
-    }
-    else if(constructionsData === null){
-        return(
-            <div className='container'>
-                {console.log('TaichungRCIApp : error layout')}
-                <Map constructionsData={null}
-                    mapParameters={mapParameters}
-                    setMapParameters={setMapParameters}
-                />
-                <InfoBlock value={null}
-                />
             </div>
         );
     }
@@ -374,12 +360,12 @@ const TaichungRCIApp = ()=>{
             <div className='container'>
                 {console.log('TaichungRCIApp : default layout')}
                 <Map constructionsData={sliceData(data)}
-                    mapParameters={mapParameters}
-                    closeInfoBlock={closeInfoBlock}
-                    setMapParameters={setMapParameters}
-                    makerMessage={makerMessage}
-                    isMobile={isMobile}
-                    userLocation={userLocation}
+                     mapParameters={mapParameters}
+                     closeInfoBlock={closeInfoBlock}
+                     setMapParameters={setMapParameters}
+                     makerMessage={makerMessage}
+                     isMobile={isMobile}
+                     userLocation={userLocation}
                 />
                 <InfoButton closeInfoBlock={closeInfoBlock}
                             makerMessage={makerMessage}
@@ -390,17 +376,15 @@ const TaichungRCIApp = ()=>{
                             setMapParameters={setMapParameters}
                 />
                 <InfoBlock value={sliceData(data)}
-                          length={data.length}
-                          option={selectorsOptions}
-                          condition={condition}
-                          mapParameters={mapParameters}
-                          closeInfoBlock={closeInfoBlock}
-                          isMobile={isMobile}
-                          makerMessage={makerMessage}
-                          handleMakerMessageClick={handleMakerMessageClick}
-                          handleCloseClick={handleCloseClick}
-                          setCondition={setCondition}
-                          setMapParameters={setMapParameters}
+                           length={data.length}
+                           option={selectorsOptions}
+                           condition={condition}
+                           mapParameters={mapParameters}
+                           closeInfoBlock={closeInfoBlock}
+                           isMobile={isMobile}
+                           handleCloseClick={handleCloseClick}
+                           setCondition={setCondition}
+                           setMapParameters={setMapParameters}
                 />
                 <MakerMessage makerMessage={makerMessage}
                               handleMakerMessageClick={handleMakerMessageClick}

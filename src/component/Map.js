@@ -92,13 +92,21 @@ const Map = (props)=>{
             </MarkerClusterer>);
     },[constructionsData, isClusterWork, gridSize, mapParameters, setMapParameters]);
     
+    const mapCoverState = ()=>{
+        console.log(isMobile,closeInfoBlock,makerMessage);
+        if(constructionsData === null) return 'open';
+        else if(isMobile){
+            if(closeInfoBlock === null && makerMessage === null) return 'close';
+            else if((closeInfoBlock === false) || (makerMessage === true)) return 'open';
+            else if((closeInfoBlock === true) || (makerMessage === false)) return 'close';
+        }else{
+            return 'close';
+        }
+    }
 
     return(
         <div className='mapContainer'>
-        {
-            (constructionsData === null || (!closeInfoBlock && isMobile) || (makerMessage && isMobile)) &&
-            <div id='mapCover' className={`mapCover ${(constructionsData === null || (!closeInfoBlock && isMobile)) || (makerMessage && isMobile) ? 'open':'close'}`}/>
-        }
+        <div id='mapCover' className={`mapCover ${mapCoverState()}`}/>
         <LoadScript googleMapsApiKey={APIKey}>
             <GoogleMap
                 mapContainerStyle={{

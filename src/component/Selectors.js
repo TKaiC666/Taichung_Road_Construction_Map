@@ -45,7 +45,6 @@ const Selectors = (props)=>{
 
     const getSelectValue = (id)=>{
         let element = document.getElementById(id);
-        console.log(element);
         let value = null;
 
         if(element === null) value = '載入中';
@@ -71,7 +70,6 @@ const Selectors = (props)=>{
             }
         }
         
-        console.log(value);
         return value;
     }
 
@@ -194,7 +192,7 @@ const Selectors = (props)=>{
 
     let workingStateArr = Array.from({length: options.workingState.length},(_,index)=>index);
     let distArr = Array.from({length: options.distriction.length},(_,index)=>index);
-    console.log('render selectors');
+
     return(
         <div className='selectors'>
             <div className='selectContainer'>

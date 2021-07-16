@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/Taichung_Road_Construction_Map/static/css/main.bdd8a391.chunk.css",
+    "main.js": "/Taichung_Road_Construction_Map/static/js/main.3033f166.chunk.js",
+    "main.js.map": "/Taichung_Road_Construction_Map/static/js/main.3033f166.chunk.js.map",
+    "runtime-main.js": "/Taichung_Road_Construction_Map/static/js/runtime-main.c8b816d5.js",
+    "runtime-main.js.map": "/Taichung_Road_Construction_Map/static/js/runtime-main.c8b816d5.js.map",
+    "static/css/2.2fe478ad.chunk.css": "/Taichung_Road_Construction_Map/static/css/2.2fe478ad.chunk.css",
+    "static/js/2.2e1e118d.chunk.js": "/Taichung_Road_Construction_Map/static/js/2.2e1e118d.chunk.js",
+    "static/js/2.2e1e118d.chunk.js.map": "/Taichung_Road_Construction_Map/static/js/2.2e1e118d.chunk.js.map",
+    "index.html": "/Taichung_Road_Construction_Map/index.html",
+    "static/css/2.2fe478ad.chunk.css.map": "/Taichung_Road_Construction_Map/static/css/2.2fe478ad.chunk.css.map",
+    "static/css/main.bdd8a391.chunk.css.map": "/Taichung_Road_Construction_Map/static/css/main.bdd8a391.chunk.css.map",
+    "static/js/2.2e1e118d.chunk.js.LICENSE.txt": "/Taichung_Road_Construction_Map/static/js/2.2e1e118d.chunk.js.LICENSE.txt",
+    "static/media/all.css": "/Taichung_Road_Construction_Map/static/media/fa-solid-900.efbd5d20.eot",
+    "static/media/index.css": "/Taichung_Road_Construction_Map/static/media/jf-openhuninn-1.1.8b3953f6.ttf"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c8b816d5.js",
+    "static/css/2.2fe478ad.chunk.css",
+    "static/js/2.2e1e118d.chunk.js",
+    "static/css/main.bdd8a391.chunk.css",
+    "static/js/main.3033f166.chunk.js"
+  ]
+}

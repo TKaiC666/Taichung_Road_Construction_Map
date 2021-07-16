@@ -7,7 +7,7 @@ import MakerMessage from './MakerMessage';
 const TaichungRCIApp = ()=>{
     const [isMobile, setIsMobile] = useState(null);
     const [userLocation, setUserLocation] = useState(null);
-    const [closeInfoBlock, setCloseInfoBlock] = useState(false);
+    const [closeInfoBlock, setCloseInfoBlock] = useState(null);
     const [makerMessage, setMakerMessage] = useState(null);
     const [constructionsData, setConstructionsData] = useState('loading');
     const [condition, setCondition] = useState({workingState:'是', distriction:0, date:{start:null,end:null}, stack:['workingState']});
@@ -20,11 +20,13 @@ const TaichungRCIApp = ()=>{
     });
 
     const INITAIL = useCallback(()=>{
+        let bool = null;
         changeInfoWindowHeight();
-        isWidthUnder(428);
+        bool = isWidthUnder(428);
         window.addEventListener('resize', changeInfoWindowHeight);
         window.addEventListener('resize', ()=>isWidthUnder(428));
         findUserLocation();
+        initialInfoBlockDisplay(bool);
     },[]);
 
     const findUserLocation = ()=>{
@@ -47,6 +49,12 @@ const TaichungRCIApp = ()=>{
             });
         }else{
             console.log('geolocation is not available');
+        }
+    }
+
+    const initialInfoBlockDisplay = (bool)=>{
+        if(bool === false){
+            setCloseInfoBlock(false);
         }
     }
 

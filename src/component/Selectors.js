@@ -8,6 +8,7 @@ const Selectors = (props)=>{
     const [dateRange, setDateRange] = useState([null, null]);
     const [startDate, endDate] = dateRange;
     const [dateOnPicker,setDateOnPicker] = useState('');
+    const [selectValue,setSelectValue] = useState({dist:null,workingState:null});
     const {options, condition, mapParameters, setCondition, setPageIndex, setMapParameters}= props;
 
     const INITAIL = useCallback(()=>{
@@ -19,6 +20,7 @@ const Selectors = (props)=>{
 
     useEffect(()=>{
         INITAIL();
+        setSelectValue({dist:getSelectValue('districtionSelect'), workingState:getSelectValue('workingStateSelect')});
     },[INITAIL]);
 
     const setCSSChosenValue = (element, value=element.value)=>{
@@ -43,32 +45,52 @@ const Selectors = (props)=>{
 
     const getSelectValue = (id)=>{
         let element = document.getElementById(id);
+        console.log(element);
         let value = null;
 
-        if(element === null) return '載入中';
-        else value =  element.value;
-
-        if(id === 'workingStateSelect'){
-            switch(value){
-                case '0' : 
-                    value = '全案件';
-                    break;
-                case '是' :
-                    value = '施工中';
-                    break;
-                case '否' :
-                    value = '未施工';
-                    break;
-                default:
-                    value = '全案件';
-                    break;
+        if(element === null) value = '載入中';
+        else{
+            value =  element.value;
+            if(id === 'workingStateSelect'){
+                switch(value){
+                    case '0' : 
+                        value = '全案件';
+                        break;
+                    case '是' :
+                        value = '施工中';
+                        break;
+                    case '否' :
+                        value = '未施工';
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if(id === 'districtionSelect' && value === '0'){
+                value = '全地區';
             }
         }
-        if(id === 'districtionSelect' && value === '0'){
-            value = '全地區';
-        }
-
+        
+        console.log(value);
         return value;
+    }
+
+    const convertWorkingState = (value)=>{
+        let state = null;
+        switch(value){
+            case 0 : 
+                state = '全案件';
+                break;
+            case '是' :
+                state = '施工中';
+                break;
+            case '否' :
+                state = '未施工';
+                break;
+            default:
+                break;
+        }
+        return state;
     }
 
     const handleWorkingState = (e)=>{
@@ -80,6 +102,10 @@ const Selectors = (props)=>{
         let stack = condition.stack;
         setCSSChosenValue(e.target);
         setCSSChosenValue(e.target.previousElementSibling, e.target.value);
+        setSelectValue((prevState)=>({
+            ...prevState,
+            workingState: convertWorkingState(workingState)
+        }));
 
         if(stack.indexOf('workingState') === -1) stack.push('workingState');
         else if(workingState === 0){
@@ -109,6 +135,10 @@ const Selectors = (props)=>{
         let stack = condition.stack;
         setCSSChosenValue(e.target);
         setCSSChosenValue(e.target.previousElementSibling, e.target.value);
+        setSelectValue((prevState)=>({
+            ...prevState,
+            dist: dist === 0 ? '全地區' : dist
+        }));
 
         if(stack.indexOf('distriction') === -1) stack.push('distriction');
         else if(dist === 0){
@@ -164,6 +194,7 @@ const Selectors = (props)=>{
 
     let workingStateArr = Array.from({length: options.workingState.length},(_,index)=>index);
     let distArr = Array.from({length: options.distriction.length},(_,index)=>index);
+    console.log('render selectors');
     return(
         <div className='selectors'>
             <div className='selectContainer'>
@@ -182,7 +213,7 @@ const Selectors = (props)=>{
                         ))
                     }
                 </select>
-                <span>{getSelectValue('workingStateSelect')}</span>
+                <span>{selectValue.workingState}</span>
             </div>
             <div className='selectContainer'>
                 <i className="selectArrow fas fa-chevron-down"/>
@@ -190,7 +221,6 @@ const Selectors = (props)=>{
                         id='districtionSelect'
                         defaultValue='0'
                         onChange={handleDistChange}
-                        data-testing='gg'
                 >
                     <option value={0}>全地區</option>
                     {
@@ -199,7 +229,7 @@ const Selectors = (props)=>{
                         ))
                     }
                 </select>   
-                <span>{getSelectValue('districtionSelect')}</span>
+                <span>{selectValue.dist}</span>
             </div>
             <DatePicker
                 value={dateOnPicker}

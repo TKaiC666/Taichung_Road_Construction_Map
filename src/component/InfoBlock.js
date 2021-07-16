@@ -30,8 +30,9 @@ const InfoBlock = (props)=>{
     
     const getCSSState = (condition)=>{
         let state = '';
-        if(condition === true) state = 'close';
-        else if(condition === false || condition === null) state = 'open';
+        if(condition === null) state = 'hide';
+        else if(condition === true) state = 'close';
+        else if(condition === false) state = 'open';
         return state;
     }
 

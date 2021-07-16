@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DatePicker, { registerLocale } from 'react-datepicker';
 import zh_TW from 'date-fns/locale/zh-TW';
 import "react-datepicker/dist/react-datepicker.css";
@@ -10,16 +10,16 @@ const Selectors = (props)=>{
     const [dateOnPicker,setDateOnPicker] = useState('');
     const {options, condition, mapParameters, setCondition, setPageIndex, setMapParameters}= props;
 
-    const INITAIL = ()=>{
+    const INITAIL = useCallback(()=>{
         let node = document.getElementById('districtionSelect');
         setCSSChosenValue(node);
         setCSSChosenValue(node.previousElementSibling, node.value);
         registerLocale('zh-TW',zh_TW);
-    }
+    },[]);
 
     useEffect(()=>{
         INITAIL();
-    },[]);
+    },[INITAIL]);
 
     const setCSSChosenValue = (element, value=element.value)=>{
         element.dataset.chosen = value;
@@ -59,6 +59,9 @@ const Selectors = (props)=>{
                 case '否' :
                     value = '未施工';
                     break;
+                default:
+                    value = '全案件';
+                    break;
             }
         }
         if(id === 'districtionSelect' && value === '0'){
@@ -68,12 +71,7 @@ const Selectors = (props)=>{
         return value;
     }
 
-    console.log('Selectors : '+condition.distriction);
-    //e.target.value的資料型別是string，testApp的searchData是用型別做判斷式。
-    //判斷方式有變再改寫。
-
     const handleWorkingState = (e)=>{
-        console.log('handle working state change : ');
         let dist = condition.distriction;
         let workingState = Number(e.target.value) === 0 ? 0 : e.target.value;
         let startDate = condition.date.start === null ? null : {...condition.date.start};
@@ -103,7 +101,6 @@ const Selectors = (props)=>{
     }
     
     const handleDistChange = (e)=>{
-        console.log('handle dist change');
         let dist = Number(e.target.value) === 0 ? 0 : e.target.value;
         let workingState = condition.workingState;
         let startDate = condition.date.start === null ? null : {...condition.date.start};
@@ -133,17 +130,14 @@ const Selectors = (props)=>{
     }
 
     const handleDateChange = (update)=>{
-        console.log(update);
         setDateRange(update);
         //如果結束日期尚未選擇，只更新date range。
         if(update[0] !== null && update[1] === null){
-            console.log(update[0]);
             setDateOnPicker(`${update[0].getFullYear()}/${addZero2String(update[0].getMonth() + 1)}/${addZero2String(update[0].getDate())} -`);
             return;
         }
         //datepicker按清空時執行，日期沒選完不會到這邊。
         if(update[0] === null && update[1] === null){
-            console.log('clear date');
             let stack = condition.stack;
             let _dist = condition.distriction;
             let _workingState = condition.workingState;
@@ -170,7 +164,6 @@ const Selectors = (props)=>{
 
     let workingStateArr = Array.from({length: options.workingState.length},(_,index)=>index);
     let distArr = Array.from({length: options.distriction.length},(_,index)=>index);
-    console.log('Selectors : render start');
     return(
         <div className='selectors'>
             <div className='selectContainer'>

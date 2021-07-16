@@ -4,7 +4,7 @@ const Card = (props)=>{
     let data = props.value;
 
     const [showLess, setShowLess] = useState(true);
-    const {mapParameters, setMapParameters} = props;
+    const {setMapParameters} = props;
     const handleClick = ()=>{
         setShowLess(!showLess);
     }
@@ -93,20 +93,6 @@ const Card = (props)=>{
             </div>
         </div>
     );
-}
-
-const pipeColor = (pipeName)=>{
-    switch(pipeName){
-        case '電力': return('#ffee58');
-        case '電信': return('#ffca58');
-        case '自來水': return('#95d8ff');
-        case '污水下水道': return('#b5ffac');
-        case '瓦斯': return('#ecadff');
-        case '軍訊': return('#5a8f66');
-        case '警訊': return('#5975b1');
-        case '緊急性挖掘': return('#ff8c8c');
-        default : return('#c7c7c7');
-    }
 }
 
 export default Card;

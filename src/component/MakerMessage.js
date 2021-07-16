@@ -24,13 +24,13 @@ const MakerMessage = (props)=>{
                 </article>
                 <div/>
                 <div className='socialMedia'>
-                    <a href='https://github.com/TKaiC666' target='_blank'>
+                    <a href='https://github.com/TKaiC666' target='_blank' rel="noreferrer">
                         <i className="fab fa-github fa-lg"/>
                     </a>
-                    <a href='https://www.facebook.com/profile.php?id=100002803117493' target='_blank'>
+                    <a href='https://www.facebook.com/profile.php?id=100002803117493' target='_blank' rel="noreferrer">
                         <i className="fab fa-facebook fa-lg"/>
                     </a>
-                    <a href='https://www.instagram.com/attifmai/' target='_blank'>
+                    <a href='https://www.instagram.com/attifmai/' target='_blank' rel="noreferrer">
                         <i className="fab fa-instagram fa-lg"/>
                     </a>
                 </div>

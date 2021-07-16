@@ -6,12 +6,10 @@ import Selectors from './Selectors';
 
 const InfoBlock = (props)=>{
 
-    console.log('InfoBlock : start');
     const {closeInfoBlock, handleCloseClick, isMobile} = props;
     const [pageIndex, setPageIndex] = useState(0);
 
     let cardsNum = useMemo(()=>{
-        console.log('InfoBlock : start useMemo()')
             let arr = [];
             let length = 0;
 
@@ -36,8 +34,6 @@ const InfoBlock = (props)=>{
         else if(condition === false || condition === null) state = 'open';
         return state;
     }
-
-    console.log('InfoBlock : page index : '+pageIndex+', cardsNum : '+cardsNum);
 
     if(props.value === 'loading'){
         return(
@@ -90,7 +86,6 @@ const InfoBlock = (props)=>{
     }
     else{
         let pageBtns = Array.from({length: props.value.length},(_,index)=>index);
-        console.log('InfoBlock : render start');
         return(
             <div className={`infoBlockContainer ${getCSSState(closeInfoBlock)}`}>
             {/* <div className={`infoBlockContainer ${closeInfoBlock ? 'close':'open'}`}> */}
@@ -101,7 +96,6 @@ const InfoBlock = (props)=>{
                     <Selectors
                         options={props.option}
                         condition={props.condition}
-                        mapParameters={props.mapParameters}
                         setCondition={props.setCondition}
                         setPageIndex={setPageIndex}
                         setMapParameters={props.setMapParameters}

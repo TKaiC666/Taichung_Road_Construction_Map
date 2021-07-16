@@ -5,7 +5,6 @@ import InfoButton from './InfoButton';
 import MakerMessage from './MakerMessage';
 
 const TaichungRCIApp = ()=>{
-    console.log('TaichungRCIApp : start');
     const [isMobile, setIsMobile] = useState(null);
     const [userLocation, setUserLocation] = useState(null);
     const [closeInfoBlock, setCloseInfoBlock] = useState(false);
@@ -20,15 +19,13 @@ const TaichungRCIApp = ()=>{
         closeInfoWindow: null
     });
 
-    const INITAIL = ()=>{
-        let isMobileOnInitial = null;
+    const INITAIL = useCallback(()=>{
         changeInfoWindowHeight();
-        isMobileOnInitial = isWidthUnder(428);
+        isWidthUnder(428);
         window.addEventListener('resize', changeInfoWindowHeight);
         window.addEventListener('resize', ()=>isWidthUnder(428));
-        // initialInfoBlockDisplay(isMobileOnInitial);
         findUserLocation();
-    }
+    },[]);
 
     const findUserLocation = ()=>{
 
@@ -48,10 +45,6 @@ const TaichungRCIApp = ()=>{
             navigator.geolocation.getCurrentPosition((position)=>{
                 handleUserLocation(position);
             });
-            // let watchID = navigator.geolocation.watchPosition((position)=>{
-            //     // alert('watch position');
-            //     handleUserLocation(position);
-            // });
         }else{
             console.log('geolocation is not available');
         }
@@ -67,10 +60,6 @@ const TaichungRCIApp = ()=>{
         else bool = false;
         setIsMobile(bool);
         return bool;
-    }
-
-    const initialInfoBlockDisplay = (bool)=>{
-        setCloseInfoBlock(bool);
     }
 
     const convertDate2Num = (date)=>{
@@ -200,12 +189,9 @@ const TaichungRCIApp = ()=>{
 
         const fetchingData = ()=>{
             const API_URL = 'https://datacenter.taichung.gov.tw/swagger/OpenData/863064b3-7678-437e-9161-8dcda3d95ab7';
-            //local testing
-            const testAPI_LOCAL = 'testing_Data.json';
-            const testAPI_ERROR = 'testing_server-error.json';
 
             console.time('fetch花費時間');
-            fetch(testAPI_LOCAL)
+            fetch(API_URL)
             .then((response) => {
                 console.timeEnd('fetch花費時間');
                 if(response.status === 200){
@@ -234,20 +220,17 @@ const TaichungRCIApp = ()=>{
     useEffect(()=>{
         INITAIL();
         fetchData();
-    },[fetchData]);
+    },[INITAIL,fetchData]);
 
     const filteredData = useMemo(()=>{
 
         const filteringData = (condition)=>{
-            console.log('filteringData() : ');
-            console.log(condition);
 
             let data = constructionsData;
             let newData = [];
             if(data === null || data === 'loading'){
                 newData = data;
             }else if(condition.stack.length === 3){
-                console.log('search all');
                 newData = data.filter((object) => (
                     ((convertDate2Num(condition.date.start) >= convertDate2Num(object.date.start)
                     && convertDate2Num(condition.date.start) <= convertDate2Num(object.date.end))
@@ -258,7 +241,6 @@ const TaichungRCIApp = ()=>{
             }else if(condition.stack.length === 2){
                 if(condition.stack.indexOf('date') !== -1){
                     let anotherCondition = condition.stack[1 - condition.stack.indexOf('date')];
-                    console.log('search date & '+anotherCondition);
                     newData = data.filter((object) => (
                         ((convertDate2Num(condition.date.start) >= convertDate2Num(object.date.start)
                         && convertDate2Num(condition.date.start) <= convertDate2Num(object.date.end))
@@ -267,17 +249,14 @@ const TaichungRCIApp = ()=>{
                         object[anotherCondition] === condition[anotherCondition]
                     ));
                 }else{
-                    console.log('search workingState & distriction');
                     newData = data.filter((object) => (
                         object.workingState === condition.workingState && object.distriction === condition.distriction
                     ));
                 }
             }else if(condition.stack.length === 1){
                 if(condition.distriction !== 0 ){
-                    console.log('search distriction');
                     newData = data.filter((object) => object.distriction === condition.distriction);
                 }else if(condition.date.start !== null && condition.date.end !== null){
-                    console.log('search date');
                     newData = data.filter((object) => (
                         (convertDate2Num(condition.date.start) >= convertDate2Num(object.date.start)
                            && convertDate2Num(condition.date.start) <= convertDate2Num(object.date.end))
@@ -285,7 +264,6 @@ const TaichungRCIApp = ()=>{
                            && convertDate2Num(condition.date.end) <= convertDate2Num(object.date.end))
                     ));
                 }else if(condition.workingState !== 0){
-                    console.log('search workingState');
                     newData = data.filter((object) => object.workingState === condition.workingState);
                 }
             }
@@ -294,7 +272,6 @@ const TaichungRCIApp = ()=>{
         };
 
         let newData = filteringData(condition);
-        console.log(newData);
         return(newData);
     },[condition, constructionsData]);
 
@@ -302,8 +279,6 @@ const TaichungRCIApp = ()=>{
         let _stack = condition.stack;
         let _options = {workingState:[], distriction:[], date:{start:{},end:{}}};
         if(_stack.length >= 0 && constructionsData !== 'loading' && constructionsData !== null){
-            console.log('condition stack '+_stack.length);
-            console.log(constructionsData);
             _options.date.start = {...constructionsData[0].date.start};
             _options.date.end = {...constructionsData[0].date.end};
             for(let object of constructionsData){
@@ -313,7 +288,6 @@ const TaichungRCIApp = ()=>{
                 if(convertDate2Num(object.date.end) >= convertDate2Num(_options.date.end)) _options.date.end = {...object.date.end};
             }
         }
-        console.log(_options);
         return _options;
     },[condition.stack, constructionsData]);
 
@@ -333,14 +307,9 @@ const TaichungRCIApp = ()=>{
         setMakerMessage(_makerMessage);
     }
 
-    console.log('TaichungRCIApp : rendering start');
     if(constructionsData === 'loading' || constructionsData === null){
-        let logMessage = '';
-        if(constructionsData === 'loading') logMessage = 'TaichungRCIApp : loading layout';
-        if(constructionsData === null) logMessage = 'TaichungRCIApp : error layout';
         return(
             <div>
-                {console.log(logMessage)}
                 <Map constructionsData={null} 
                     mapParameters={mapParameters}
                     setMapParameters={setMapParameters}
@@ -358,7 +327,6 @@ const TaichungRCIApp = ()=>{
         }
         return(
             <div className='container'>
-                {console.log('TaichungRCIApp : default layout')}
                 <Map constructionsData={sliceData(data)}
                      mapParameters={mapParameters}
                      closeInfoBlock={closeInfoBlock}

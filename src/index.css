@@ -480,13 +480,13 @@ html, body {
   .selectors {
     font-size: 16px !important;
   }
-  .selectors span {
+  .selectorsspan {
     padding: 7.5px 10px !important;
   }
-  .selectors select {
+  .selectorsselect {
     padding: 7.5px 10px !important;
   }
-  .selectors .dateSelect {
+  .selectors.dateSelect {
     padding: 7.5px 10px !important;
   }
 

@@ -63,13 +63,13 @@ html,body{
     }
     .selectors{
         font-size: 16px !important;
-        span{
+        &span{
             padding: 7.5px 10px !important;
         }
-        select{
+        &select{
             padding: 7.5px 10px !important;
         }
-        .dateSelect{
+        &.dateSelect{
             padding : 7.5px 10px !important;
         }
     }

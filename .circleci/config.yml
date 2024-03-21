@@ -58,10 +58,8 @@ workflows:
       # - build-node:
       #     requires:
       #       - test-node
-      - install-node
-      - build-node:
-          requires:
-            - install-node
+      # - install-node
+      - build-node
     # - deploy:
     #     requires:
     #       - build-node

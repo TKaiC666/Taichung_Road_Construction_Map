@@ -10,19 +10,19 @@ jobs:
     steps:
       - checkout
       - node/install-packages:
-          pkg-manager: npm
+          pkg-manager: yarn
       - run:
           name: Run tests
-          command: npm test --passWithNoTests
+          command: yarn test --passWithNoTests
   build-node:
     # Build node project
     executor: node/default
     steps:
       - checkout
       - node/install-packages:
-          pkg-manager: npm
+          pkg-manager: yarn
       - run:
-          command: npm run build
+          command: yarn build
       - run:
           name: Create the ~/artifacts directory if it doesn't exist
           command: mkdir -p ~/artifacts

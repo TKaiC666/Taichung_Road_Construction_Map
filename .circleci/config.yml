@@ -65,8 +65,8 @@ workflows:
       #       - test-node
       - build-node
       - deploy:
-          filters:
-            branches:
-              only: main
+          # filters:
+          #   branches:
+          #     only: main
           requires:
             - build-node

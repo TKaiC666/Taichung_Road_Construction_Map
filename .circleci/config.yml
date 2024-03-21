@@ -51,6 +51,8 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
       - run:
+          command: yarn build
+      - run:
           name: deploy
           command: yarn deploy
 workflows:

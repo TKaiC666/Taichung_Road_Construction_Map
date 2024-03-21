@@ -44,6 +44,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       # Replace this with steps to deploy to users
+      - checkout
       - node/install:
           install-yarn: true
           node-version: "16.13.1"

@@ -6,7 +6,7 @@ orbs:
 jobs:
   test-node:
     # Install node dependencies and run tests
-    executor: node/16.13.1
+    executor: node/default
     steps:
       - checkout
       - node/install-packages:
@@ -16,7 +16,7 @@ jobs:
           command: npm test --passWithNoTests
   build-node:
     # Build node project
-    executor: node/16.13.1
+    executor: node/default
     steps:
       - checkout
       - node/install-packages:

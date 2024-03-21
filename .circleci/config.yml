@@ -33,6 +33,8 @@ jobs:
           install-yarn: true
           node-version: "16.13.1"
       - run: node --version
+      - node/install-packages:
+          pkg-manager: yarn
       - run:
           command: yarn build
       - run:

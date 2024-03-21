@@ -4,6 +4,15 @@ version: 2.1
 orbs:
   node: circleci/node@5
 jobs:
+  install-node:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - node/install:
+        install-yarn: true
+        node-version: "16.13.1"
+      - run: node --version
   test-node:
     # Install node dependencies and run tests
     executor: node/default
@@ -49,7 +58,9 @@ workflows:
       # - build-node:
       #     requires:
       #       - test-node
-      - build-node
+      - install-node
+      - build-node:
+          requires: -install-node
     # - deploy:
     #     requires:
     #       - build-node

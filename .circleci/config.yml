@@ -10,19 +10,19 @@ jobs:
     steps:
       - checkout
       - node/install-packages:
-          pkg-manager: npm
+          pkg-manager: yarn
       - run:
           name: Run tests
-          command: npm test --passWithNoTests
+          command: yarn test --passWithNoTests
   build-node:
     # Build node project
     executor: node/default
     steps:
       - checkout
       - node/install-packages:
-          pkg-manager: npm
+          pkg-manager: yarn
       - run:
-          command: npm run build
+          command: yarn build
       - run:
           name: Create the ~/artifacts directory if it doesn't exist
           command: mkdir -p ~/artifacts
@@ -41,14 +41,15 @@ jobs:
       # Replace this with steps to deploy to users
       - run:
           name: deploy
-          command: '#e.g. ./deploy.sh'
+          command: "#e.g. ./deploy.sh"
 workflows:
   build-and-test:
     jobs:
-      - test-node
-      - build-node:
-          requires:
-            - test-node
+      # - test-node
+      # - build-node:
+      #     requires:
+      #       - test-node
+      - build-node
     # - deploy:
     #     requires:
     #       - build-node

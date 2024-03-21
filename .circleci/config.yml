@@ -25,11 +25,13 @@ jobs:
           command: yarn test --passWithNoTests
   build-node:
     # Build node project
-    executor: node/default
+    docker:
+      - image: cimg/base:stable
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - node/install:
+          install-yarn: true
+          node-version: "16.13.1"
       - run: node --version
       - run:
           command: yarn build

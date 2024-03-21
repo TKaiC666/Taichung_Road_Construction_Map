@@ -44,9 +44,15 @@ jobs:
       - image: cimg/base:stable
     steps:
       # Replace this with steps to deploy to users
+      - node/install:
+          install-yarn: true
+          node-version: "16.13.1"
+      - run: node --version
+      - node/install-packages:
+          pkg-manager: yarn
       - run:
           name: deploy
-          command: "#e.g. ./deploy.sh"
+          command: yarn deploy
 workflows:
   build-and-test:
     jobs:
@@ -55,6 +61,9 @@ workflows:
       #     requires:
       #       - test-node
       - build-node
-    # - deploy:
-    #     requires:
-    #       - build-node
+      - deploy:
+          filters:
+            branches:
+              only: main
+          requires:
+            - build-node

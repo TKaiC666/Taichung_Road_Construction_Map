@@ -21,7 +21,6 @@ const Map = (props) => {
     userLocation,
   } = props;
   const mapRef = useRef(null);
-  const APIKey = "AIzaSyAD3EMZ4E3XEei4WDxlpEaUpiPeOCm5cIQ";
   let isClusterWork =
     constructionsData !== null && constructionsData.length !== 0 ? true : false;
 
@@ -143,7 +142,7 @@ const Map = (props) => {
   return (
     <div className="mapContainer">
       <div id="mapCover" className={`mapCover ${mapCoverState()}`} />
-      <LoadScript googleMapsApiKey={APIKey}>
+      <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAP_API_KEY}>
         <GoogleMap
           mapContainerStyle={{
             width: "100%",

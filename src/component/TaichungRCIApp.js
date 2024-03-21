@@ -205,11 +205,8 @@ const TaichungRCIApp = () => {
     };
 
     const fetchingData = () => {
-      const API_URL =
-        "https://datacenter.taichung.gov.tw/swagger/OpenData/863064b3-7678-437e-9161-8dcda3d95ab7";
-
       console.time("fetch花費時間");
-      fetch(API_URL)
+      fetch(process.env.REACT_APP_API_URL)
         .then((response) => {
           console.timeEnd("fetch花費時間");
           if (response.status === 200) {

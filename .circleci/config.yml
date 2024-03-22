@@ -44,17 +44,18 @@ jobs:
       - image: cimg/base:stable
     steps:
       # Replace this with steps to deploy to users
+      - checkout
       - node/install:
           install-yarn: true
           node-version: "16.13.1"
       - run: node --version
       - node/install-packages:
           pkg-manager: yarn
-      - run:
-          command: yarn build
-      - run:
-          name: deploy
-          command: yarn deploy
+      - run: yarn build
+      - run: |
+          git config --global user.email $GH_EMAIL
+          git config --global user.name $GH_NAME
+          yarn deploy
 workflows:
   build-and-test:
     jobs:

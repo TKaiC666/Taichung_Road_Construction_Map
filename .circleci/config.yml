@@ -51,11 +51,8 @@ jobs:
       - run: node --version
       - node/install-packages:
           pkg-manager: yarn
-      - run:
-          command: yarn build
-      - run:
-          name: deploy
-          command: |
+      - run: yarn build
+      - run: |
           git config --global user.email $GH_EMAIL
           git config --global user.name $GH_NAME
           yarn deploy

@@ -55,7 +55,10 @@ jobs:
           command: yarn build
       - run:
           name: deploy
-          command: yarn deploy
+          command: |
+          git config --global user.email $GH_EMAIL
+          git config --global user.name $GH_NAME
+          yarn deploy
 workflows:
   build-and-test:
     jobs:

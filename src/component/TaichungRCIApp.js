@@ -112,17 +112,30 @@ const TaichungRCIApp = () => {
           return locationObject;
         };
 
+        /**
+         * @todo: use WKT converter to process
+         */
         const splitPolygonData = (polygon) => {
-          let coordArray = polygon.slice(12, polygon.length - 2);
-          if (polygon === "") {
-            return null;
-          }
+          // workaround
+          const POLYGON_PATTERN = /^POLYGON\(\(.*\)\)$/;
+          if (!POLYGON_PATTERN.test(polygon.replace(/\s/g, ""))) return null;
+          const POLYGON_PREFIX = "POLYGON((";
+          const POLYGON_SUFFIX = "))";
+          const COMMA = ",";
+          const polygonCoordinate = polygon
+            .replace(/\s/g, "")
+            .split(POLYGON_PREFIX)[1]
+            .split(POLYGON_SUFFIX)[0]
+            .split(COMMA)
+            .map((coordinate) => {
+              const TAICHUNG_LATITUDE = "24.";
+              const [lngString, wrongLatString] =
+                coordinate.split(TAICHUNG_LATITUDE);
+              const latString = TAICHUNG_LATITUDE + wrongLatString;
+              return { lat: Number(latString), lng: Number(lngString) };
+            });
 
-          coordArray = coordArray.split(", ");
-          coordArray = coordArray.map((i) => i.split(" "));
-          coordArray = coordArray.map((i) => convertStringCoor2Num(i[1], i[0]));
-
-          return coordArray;
+          return polygonCoordinate;
         };
 
         let convertPart = {

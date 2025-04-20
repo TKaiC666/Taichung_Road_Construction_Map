@@ -4,6 +4,7 @@ import InfoBlock from "./InfoBlock";
 import InfoButton from "./InfoButton";
 import MakerMessage from "./MakerMessage";
 import fetchApiData from "../lib/fetchApiData";
+import { keyMap } from "../constants/keyMap";
 
 const TaichungRCIApp = () => {
   const [isMobile, setIsMobile] = useState(null);
@@ -142,25 +143,23 @@ const TaichungRCIApp = () => {
         let convertPart = {
           date: {
             start: {
-              year: Number(data["核准起日"].substring(0, 3)) + 1911,
-              month: Number(data["核准起日"].substring(3, 5)),
-              day: Number(data["核准起日"].substring(5)),
+              year: Number(data[keyMap.startDate].substring(0, 3)) + 1911,
+              month: Number(data[keyMap.startDate].substring(3, 5)),
+              day: Number(data[keyMap.startDate].substring(5)),
             },
             end: {
-              year: Number(data["核准迄日"].substring(0, 3)) + 1911,
-              month: Number(data["核准迄日"].substring(3, 5)),
-              day: Number(data["核准迄日"].substring(5)),
+              year: Number(data[keyMap.endDate].substring(0, 3)) + 1911,
+              month: Number(data[keyMap.endDate].substring(3, 5)),
+              day: Number(data[keyMap.endDate].substring(5)),
             },
           },
           personInCharge: {
-            name: data["承辦人"].substring(0, 1) + "◯◯",
+            name: data[keyMap.contactName].substring(0, 1) + "◯◯",
           },
           coordinate: {
-            lat: convertStringCoor2Num(data["中心點Y坐標"], data["中心點X坐標"])
-              .lat,
-            lng: convertStringCoor2Num(data["中心點Y坐標"], data["中心點X坐標"])
-              .lng,
-            polygon: splitPolygonData(data["施工範圍坐標"]),
+            lat: convertStringCoor2Num(data[keyMap.lat], data[keyMap.lng]).lat,
+            lng: convertStringCoor2Num(data[keyMap.lat], data[keyMap.lng]).lng,
+            polygon: splitPolygonData(data[keyMap.geometry]),
           },
         };
 
@@ -169,13 +168,14 @@ const TaichungRCIApp = () => {
 
       let convertedPart = convertData(data);
 
+      // TODO: use keyMap to reconstruct data
       let newData = {
-        title: data["工程名稱"],
-        distriction: data["區域名稱"],
-        address: data["地點"],
-        pipeType: data["管線工程類別"],
-        constructionType: data["案件類別"],
-        workingState: data["是否開工"],
+        title: data[keyMap.projectName],
+        distriction: data[keyMap.district],
+        address: data[keyMap.location],
+        pipeType: data[keyMap.pipeType],
+        constructionType: data[keyMap.caseType],
+        workingState: data[keyMap.isStarted],
         date: {
           start: {
             year: convertedPart.date.start.year,
@@ -188,16 +188,16 @@ const TaichungRCIApp = () => {
             day: convertedPart.date.end.day,
           },
         },
-        applicationNumber: data["申請書編號"],
-        licenseNumber: data["許可證編號"],
-        applicant: data["申請單位"],
+        applicationNumber: data[keyMap.applicationId],
+        licenseNumber: data[keyMap.permitId],
+        applicant: data[keyMap.applicantUnit],
         contractor: {
-          name: data["廠商名稱"],
-          phone: data["廠商電話"],
+          name: data[keyMap.contractorName],
+          phone: data[keyMap.contractorPhone],
         },
         personInCharge: {
           name: convertedPart.personInCharge.name,
-          phone: data["承辦人電話"],
+          phone: data[keyMap.contactPhone],
         },
         coordinate: {
           lat: convertedPart.coordinate.lat,

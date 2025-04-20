@@ -3,6 +3,7 @@ import Map from "./Map";
 import InfoBlock from "./InfoBlock";
 import InfoButton from "./InfoButton";
 import MakerMessage from "./MakerMessage";
+import fetchApiData from "../lib/fetchApiData";
 
 const TaichungRCIApp = () => {
   const [isMobile, setIsMobile] = useState(null);
@@ -101,7 +102,7 @@ const TaichungRCIApp = () => {
     return newData;
   };
 
-  const fetchData = useCallback(() => {
+  const fetchData = useCallback(async () => {
     const reconstructData = (data) => {
       function convertData(data) {
         const convertStringCoor2Num = (lat, lng) => {
@@ -208,41 +209,12 @@ const TaichungRCIApp = () => {
       return newData;
     };
 
-    const handleData = (data) => {
-      let _data = data;
-      let newData = [];
-      for (let i = 0; i < _data.length; i++) {
-        newData.push(reconstructData(_data[i]));
+    const rawApiData = await fetchApiData(process.env.REACT_APP_API_URL).catch(
+      () => {
+        setConstructionsData(null);
       }
-      return newData;
-    };
-
-    const fetchingData = () => {
-      console.time("fetch花費時間");
-      fetch(process.env.REACT_APP_API_URL)
-        .then((response) => {
-          console.timeEnd("fetch花費時間");
-          if (response.status === 200) {
-            return response.text();
-          }
-          throw new Error("response was not ok.");
-        })
-        .then((data) => {
-          if (data[0] !== "[") {
-            console.error("fetch error : \n", data);
-            setConstructionsData(null);
-          } else {
-            let newData = handleData(JSON.parse(data));
-            setConstructionsData(newData);
-          }
-        })
-        .catch((error) => {
-          console.error("fetch error : ", error.message);
-          setConstructionsData(null);
-        });
-    };
-
-    fetchingData();
+    );
+    setConstructionsData(rawApiData.map((e) => reconstructData(e)));
   }, []);
 
   useEffect(() => {
